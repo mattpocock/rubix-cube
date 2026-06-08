@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3 — The Second Layer: Two-Thirds Solved</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .bigalg {
+    text-align: center; margin: 32px 0;
+  }
+  .bigalg .moves {
+    font-size: 26px; padding: 14px 28px; background: var(--ink); color: var(--bg);
+    border-radius: 10px; display: inline-block;
+  }
+  .bigalg .moves .chunk2 { color: #ffd58a; }
+  .bigalg .cap {
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-top: 10px;
+  }
+  .face {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 3px; background: #1a1a1a; padding: 3px; border-radius: 6px;
+    vertical-align: middle;
+  }
+  .face div { border-radius: 3px; }
+  .figrow { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 24px 0; justify-content: center; }
+  .fig { text-align: center; }
+  .fig .cap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 220px;
+  }
+  .W { background: var(--c-white); } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); }  .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); }
+  .X { background: var(--c-grey); }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .twocol { display: flex; gap: 20px; flex-wrap: wrap; margin: 28px 0; }
+  .algcard {
+    flex: 1 1 280px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px;
+  }
+  .algcard h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+  }
+  .algcard .moves { display: inline-block; font-size: 19px; margin-bottom: 10px; }
+  .algcard p { font-size: 16px; margin-bottom: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); }
+  .quiz {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+  }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 14px; margin: 8px 0; font-size: 15.5px; cursor: pointer;
+    font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 3</div>
+  <h1>The Second Layer: Two-Thirds&nbsp;Solved</h1>
+  <p class="standfirst">Four edges, two mirror-image algorithms, and the cube goes from one-third to two-thirds done.</p>
+</header>
+
+<p>Keep the solving grip from Lesson 2: <strong>white on the bottom, yellow on top</strong>. Your job this lesson is to fill in the middle layer — the four edge pieces that sit between the centers. Once they're in, only the top (yellow) layer remains.</p>
+
+<h2><span class="num">1.</span> Which pieces you're hunting</h2>
+
+<p>The middle layer needs exactly four edges: red-green, green-orange, orange-blue, and blue-red. Notice what's <em>not</em> in that list — yellow. Every edge that belongs in the middle layer has <strong>no yellow sticker</strong>.</p>
+
+<p>So the hunt is simple: look at the edges in the top layer and find one <strong>without yellow on either of its two stickers</strong>. Edges with yellow live in the last layer — leave them alone, they're next lesson's problem.</p>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You're scanning the top layer and see three edges: yellow-green, red-blue, and yellow-orange. Which can you insert into the middle layer?</div>
+  <button class="opt" data-right="0">Yellow-green — green belongs on a side, so it can go in the middle.</button>
+  <button class="opt" data-right="1">Red-blue — it's the only one with no yellow sticker.</button>
+  <button class="opt" data-right="0">Any of them, as long as you position it correctly first.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">2.</span> Park it: make the upside-down T</h2>
+
+<p>Found a non-yellow edge in the top layer? Each edge has two stickers: one facing <em>out</em> (to the side) and one facing <em>up</em>. Turn the top layer (<span class="moves">U</span> moves only) until the <strong>outward-facing sticker matches the center directly below it</strong>. Then rotate the whole cube so that face is towards you.</p>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="R"></div><div class="X"></div>
+      <div class="X"></div><div class="R"></div><div class="X"></div>
+      <div class="R"></div><div class="R"></div><div class="R"></div>
+    </div>
+    <div class="cap">Front face: edge sticker, matching center, and the solved bottom row form an upside-down T</div>
+  </div>
+</div>
+
+<p>That upside-down T is your "parked" position. Now look at the edge's <strong>other</strong> sticker — the one facing up. It matches either the center on your <strong>right</strong> or the center on your <strong>left</strong>. That tells you which slot the edge is going into, and which algorithm to use.</p>
+
+<h2><span class="num">3.</span> The two inserts</h2>
+
+<div class="twocol">
+  <div class="algcard">
+    <h4>Top sticker matches right center → Right insert</h4>
+    <span class="moves">U R U' R' &nbsp;·&nbsp; U' F' U F</span>
+    <p>The edge drops into the slot between the front and right centers.</p>
+  </div>
+  <div class="algcard">
+    <h4>Top sticker matches left center → Left insert</h4>
+    <span class="moves">U' L' U L &nbsp;·&nbsp; U F U' F'</span>
+    <p>The exact mirror image, done with the left hand. The edge drops into the slot between the front and left centers.</p>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>New letter: F is the front face</strong> — the face pointing at you, the one with the upside-down T. It becomes F the moment you park the edge, and stays F for all eight moves: don't re-rotate the cube mid-algorithm. <span class="moves">F</span> is a quarter-turn clockwise <em>as you look straight at it</em> — the top row of the front face swings to the right. <span class="moves">F'</span> swings it to the left. Direction check before you start: do <span class="moves">F</span> then <span class="moves">F'</span> — the cube must come back exactly to where it was. A reversed F is the number-one reason this algorithm "destroys" the first layer.
+</div>
+
+<p>Eight moves sounds like a lot, but look at the shape: each algorithm is <strong>two four-move chunks</strong>, and every chunk has the same do-undo rhythm as the trigger you already know — turn the top, turn a face, undo the top, undo the face. Say the right insert as two breaths: <em>"U, R, U-prime, R-prime"</em> … <em>"U-prime, F-prime, U, F"</em>.</p>
+
+<div class="bigalg">
+  <span class="moves">U R U' R' <span class="chunk2">U' F' U F</span></span>
+  <div class="cap">Right insert — chunk one with the right hand, chunk two on the front face</div>
+</div>
+
+<div class="insight">
+  <strong>Two memory hooks.</strong> First: the algorithm starts by steering the edge <em>away</em> from the slot it's heading into — right insert begins <span class="moves">U</span> (edge swings left), left insert begins <span class="moves">U'</span> (edge swings right). Counter-intuitive, so trust it. Second: the chunks alternate hands — right insert is <em>right-hand chunk, then front chunk</em>; the left insert mirrors everything, including every turn direction.
+</div>
+
+<div class="insight">
+  <strong>Mid-algorithm, the cube looks broken. It isn't.</strong> Around move four or five, a white corner gets yanked out of your finished first layer. That's the algorithm working: it pulls the corner out of the slot, attaches the edge to it, and puts the pair back as one unit. Finish all eight moves and the white layer comes back intact — with the edge installed above it. If you stop halfway in a panic, <em>that's</em> when you lose the first layer.
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You've parked the green-red edge: green faces you over the green center, red faces up, and the red center is on your left. Which algorithm?</div>
+  <button class="opt" data-right="0">Right insert — <span class="moves">U R U' R' U' F' U F</span>.</button>
+  <button class="opt" data-right="1">Left insert — <span class="moves">U' L' U L U F U' F'</span> — because the top sticker matches the left center.</button>
+  <button class="opt" data-right="0">Neither — re-park it so red faces you instead.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">4.</span> The rescue move: edges stuck in the middle</h2>
+
+<p>Sometimes an edge is already in the middle layer but wrong — either in the wrong slot, or in the right slot flipped. And sometimes you'll scan the top layer and find <em>no</em> non-yellow edges at all, which means the ones you need are all stuck in the middle.</p>
+
+<p>The fix is the same idea as the corner rescue in Lesson 2: <strong>kick it out, then insert it properly.</strong> Hold the cube so the stuck edge's slot is at the front-right, and do the right insert — inserting whatever top-layer edge happens to land there. The stuck edge pops out into the top layer. Now it's a normal case: park it, pick the insert, drop it in.</p>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">The blue-orange edge sits between the blue and orange centers — right slot, but flipped (blue sticker on the orange side). What's the plan?</div>
+  <button class="opt" data-right="0">Leave it — the last-layer algorithms will flip it later.</button>
+  <button class="opt" data-right="1">Do an insert into that slot to pop the edge out into the top layer, then park it and insert it again, correctly oriented this time.</button>
+  <button class="opt" data-right="0">Turn the middle layer directly to rotate the edge in place.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">5.</span> What done looks like</h2>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+    </div>
+    <div class="cap">Each side: bottom TWO rows solid, matching the center</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="cap">Top face: still a mess — and that's correct</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The test is four solid two-row walls.</strong> Walk around the cube: every side face should show its bottom two rows solid and matching the center. Only the top layer — the yellow one — remains scrambled. That's two-thirds of the cube solved, and everything left lives in one layer.
+</div>
+
+<div class="practice">
+  <h4>Practice — do this before the next session</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> From where your cube is now: finish the first layer, then insert all four middle edges. Check the two-row walls on all four sides.</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Full scramble → first layer → second layer, three times in a row without help.</p>
+  <p style="margin-bottom:0"><strong>3.</strong> Drill the <em>right</em> insert until it flows, before leaning on the left one — you can always bring an edge to a right-insert position by rotating the cube. (Many cubers solve the whole middle layer with just the right insert.) Learn the left insert second, as a speed-up.</p>
+</div>
+
+<p>Next up, Lesson 4: the <strong>last layer</strong> begins — making the yellow cross on top. From here on it's pure algorithms, but you've already proven you can run those.</p>
+
+<footer>
+  Lesson 3 of the Rubik's Cube curriculum · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · <a href="https://jperm.net/3x3">J Perm Beginner Guide</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a>
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('[data-quiz]').forEach(quiz => {
+  const feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right
+        ? '✓ Correct.'
+        : '✗ Not quite — re-read the section above and try again.';
+    });
+  });
+});
+</script>
+</body>
+</html>

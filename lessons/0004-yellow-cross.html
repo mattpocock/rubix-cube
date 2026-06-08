@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 4 — The Yellow Cross: One Algorithm, Three Shapes</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .bigalg {
+    text-align: center; margin: 32px 0;
+  }
+  .bigalg .moves {
+    font-size: 26px; padding: 14px 28px; background: var(--ink); color: var(--bg);
+    border-radius: 10px; display: inline-block;
+  }
+  .bigalg .moves .chunk2 { color: #ffd58a; }
+  .bigalg .cap {
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-top: 10px;
+  }
+  .face {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 3px; background: #1a1a1a; padding: 3px; border-radius: 6px;
+    vertical-align: middle;
+  }
+  .face div { border-radius: 3px; }
+  .figrow { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; margin: 24px 0; justify-content: center; }
+  .fig { text-align: center; }
+  .fig .cap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 220px;
+  }
+  .fig .casecount {
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 14px;
+    color: var(--accent); margin-top: 6px;
+  }
+  .W { background: var(--c-white); } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); }  .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); }
+  .X { background: var(--c-grey); }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .quiz {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+  }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 14px; margin: 8px 0; font-size: 15.5px; cursor: pointer;
+    font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 4</div>
+  <h1>The Yellow Cross: One Algorithm, Three&nbsp;Shapes</h1>
+  <p class="standfirst">The last layer begins. Six moves you already half-know, repeated until a cross appears.</p>
+</header>
+
+<p>Two layers down. Everything that's left to solve lives in the top layer — and the first job is to get the four yellow <em>edge</em> stickers facing up, forming a yellow cross on the top face. Same grip as always: <strong>white on the bottom, yellow on top</strong>.</p>
+
+<p>One thing changes from here on: <strong>you stop hunting for pieces.</strong> The last layer isn't solved by finding a piece and steering it home — it's solved by reading the <em>pattern</em> on the top face and applying the matching algorithm. Look, match, execute.</p>
+
+<h2><span class="num">1.</span> The algorithm — you already know the middle of it</h2>
+
+<div class="bigalg">
+  <span class="moves">F <span class="chunk2">R U R' U'</span> F'</span>
+  <div class="cap">Front clockwise · your old trigger · front counterclockwise</div>
+</div>
+
+<p>Look at what's inside: <span class="moves">R U R' U'</span> — the exact trigger that built your white corners in Lesson 2, and that you've done a hundred times since. The whole algorithm is just that trigger <strong>wrapped in an F-sandwich</strong>: open with <span class="moves">F</span>, do the trigger, close with <span class="moves">F'</span>. Say it as: <em>"F — trigger — F-prime."</em> That's the entire memorisation load of this lesson.</p>
+
+<div class="insight">
+  <strong>What is it actually doing?</strong> The cross edges are already <em>in</em> the top layer — they have nowhere else to be. The problem is some of them are <strong>flipped</strong>: yellow sticker facing sideways instead of up. The F-sandwich flips edges in place. The opening <span class="moves">F</span> tips edges into the right hand's reach, the trigger re-seats them the other way up, and the closing <span class="moves">F'</span> puts everything back. You're not moving edges around the cube — you're rolling them over where they sit. (More at <a href="https://www.ryanheise.com/cube/beginner.html">Ryan Heise's beginner solution</a>.)
+</div>
+
+<h2><span class="num">2.</span> Read the top face: dot, L, or line</h2>
+
+<p>Ignore the corners completely — yellow corner stickers will be scattered around and that's fine, they're the next lesson's job. Look <em>only</em> at the four edge positions on the top face. You'll see one of exactly three shapes (or the cross itself, in which case you're done):</p>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="casecount">Dot — apply 3×</div>
+    <div class="cap">No yellow edges up. Any way you hold it is fine.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="Y"></div><div class="Y"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="casecount">L-shape — apply 2×</div>
+    <div class="cap">Hold it so the L points to the back-left: one arm at the back, one on the left — like a 9 on a clock face.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="Y"></div><div class="Y"></div><div class="Y"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="casecount">Line — apply 1×</div>
+    <div class="cap">Hold it so the line runs horizontally, left to right.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="Y"></div><div class="Y"></div><div class="Y"></div>
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+    </div>
+    <div class="casecount">Cross — done ✓</div>
+    <div class="cap">All four edges yellow-side-up. Move on.</div>
+  </div>
+</div>
+
+<p>The three shapes are really one journey: <strong>dot → L → line → cross</strong>. Each application of the algorithm moves you one step along the chain. That's why the counts are 3, 2, 1 — they're just "how far from the end are you?"</p>
+
+<div class="insight">
+  <strong>Orientation matters, so re-read between applications.</strong> After each run of the algorithm, the shape changes — and the <em>new</em> shape needs to be held its own way before you go again. Dot: run it, find the L, point the L back-left, run it, get the line, turn it horizontal, run it once more. Don't blindly fire three times from one grip. (<a href="https://jperm.net/3x3">J&nbsp;Perm</a> and <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix</a> both teach exactly this re-read.)
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">Your top face shows two yellow edges forming an L. Where does the L point before you run the algorithm?</div>
+  <button class="opt" data-right="0">Towards you, like a 6 on a clock — so the F face can grab both edges.</button>
+  <button class="opt" data-right="1">Back-left, like a 9 on a clock — one arm at the back, one on the left.</button>
+  <button class="opt" data-right="0">It doesn't matter — the algorithm flips edges wherever they are.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">Top face shows a horizontal yellow line, but the two yellow edges don't match the side centers — the colours around the top are scrambled. What do you do?</div>
+  <button class="opt" data-right="0">Turn the U layer first to line the edge colours up with the centers, then run the algorithm.</button>
+  <button class="opt" data-right="1">Run the algorithm once — side colours are irrelevant for this step, the cross only cares about yellow facing up.</button>
+  <button class="opt" data-right="0">Run the algorithm twice — mismatched colours mean you're further from the cross.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">3.</span> Two traps</h2>
+
+<h3>The F-direction trap, again</h3>
+<p>Same warning as Lesson 3, because it's still the number-one error: <span class="moves">F</span> is clockwise <em>as you look straight at the front face</em> — the top row swings right. The closing <span class="moves">F'</span> must be the exact undo. If your first layer "explodes" during this step, a reversed F is almost certainly why. Sanity check: <span class="moves">F</span> then <span class="moves">F'</span> with nothing in between should change nothing.</p>
+
+<h3>One or three yellow edges up</h3>
+<p>If you ever see exactly <strong>one</strong> or <strong>three</strong> yellow edges facing up — not zero, two, or four — stop. That state is impossible on a healthy cube. It means an edge piece was popped out and reinserted flipped at some point (it happens, especially on looser cubes). The fix is physical, not algorithmic: pop the flipped edge out and reseat it the right way round, or take the top layer apart and rebuild. (Both <a href="https://jperm.net/3x3">J&nbsp;Perm</a> and <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix</a> flag this.) No algorithm will ever get you out of it.</p>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You count exactly three yellow edges facing up on the top face. What's your move?</div>
+  <button class="opt" data-right="0">Apply the algorithm once — three up means you're one application from the cross.</button>
+  <button class="opt" data-right="0">Hold the odd edge at the front-right and apply the algorithm twice.</button>
+  <button class="opt" data-right="1">Stop — an odd number of yellow edges up means a piece is physically flipped. Pop it out and reseat it; no algorithm can fix this.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">4.</span> What done looks like</h2>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="Y"></div><div class="Y"></div><div class="Y"></div>
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+    </div>
+    <div class="cap">Top face: yellow cross. Corners still random — correct.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+    </div>
+    <div class="cap">Sides: two-row walls still intact underneath.</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The cross edges don't need to match the sides yet.</strong> Yellow up is the whole goal of this step. Lining the cross edges up with their side centers — and sorting the corners — is the rest of the last layer, coming next.
+</div>
+
+<div class="practice">
+  <h4>Practice — do this before the next session</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> Solve to the end of the second layer, then make the yellow cross. Note which shape you started from (dot, L, or line).</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Repeat from a fresh scramble until you've personally seen <strong>all three starting shapes</strong> at least once. The dot is the rarest — be patient.</p>
+  <p style="margin-bottom:0"><strong>3.</strong> Each time, before running the algorithm, say the shape and the count out loud: <em>"L, back-left, twice."</em> Reading the pattern is the skill — the moves are ones you already own.</p>
+</div>
+
+<p>Next, Lesson 5: finishing the cross properly — turning the yellow cross so its edges match the side centers, and then the yellow corners. The summit is close.</p>
+
+<footer>
+  Lesson 4 of the Rubik's Cube curriculum · Sources: <a href="https://jperm.net/3x3">J Perm Beginner Guide</a> · <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · <a href="https://www.ryanheise.com/cube/beginner.html">Ryan Heise</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a> — or ask me, your teacher, anything that's unclear.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('[data-quiz]').forEach(quiz => {
+  const feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right
+        ? '✓ Correct.'
+        : '✗ Not quite — re-read the section above and try again.';
+    });
+  });
+});
+</script>
+</body>
+</html>

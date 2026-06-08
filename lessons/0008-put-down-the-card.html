@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 8 — Put Down the Card: Memorising the Method</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 16.5px; }
+  th, td { border: 1px solid var(--border); padding: 9px 13px; text-align: left; vertical-align: top; }
+  th {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    background: var(--card);
+  }
+  .trig { color: var(--accent); font-weight: 700; }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .flashcards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px; margin: 28px 0;
+  }
+  .fcard {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 16px; cursor: pointer; text-align: center; min-height: 120px;
+    display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: border-color .15s, transform .1s;
+    user-select: none;
+  }
+  .fcard:hover { border-color: var(--ink); }
+  .fcard:active { transform: scale(0.98); }
+  .fcard .front { font-size: 16px; font-weight: 700; }
+  .fcard .hint { font-size: 13px; color: var(--muted); font-style: italic; font-family: Georgia, serif; }
+  .fcard .back {
+    display: none;
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.05em;
+    background: var(--ink); color: var(--bg); border-radius: 6px; padding: 8px 6px;
+  }
+  .fcard.flipped .back { display: block; }
+  .fcard.flipped .hint { display: none; }
+  .fcard .tap { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .fcard.flipped .tap { display: none; }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 8</div>
+  <h1>Put Down the Card</h1>
+  <p class="standfirst">You can solve the cube. Now make the solve card unnecessary — by noticing how little there actually is to memorise.</p>
+</header>
+
+<p>First, perspective: it feels like there's a lot to remember, but the entire method is <strong>six algorithms</strong>, and they're not six strangers. Half of them are built from one move-pattern you already own cold. The work isn't memorising six things — it's memorising about <strong>three and a half</strong>.</p>
+
+<h2><span class="num">1.</span> The family tree — the trigger is everywhere</h2>
+
+<p>Lay the six out and look for <span class="moves">R U R' U'</span>-shaped bones (the community calls these embedded patterns <em>triggers</em> — <a href="https://speedcubeshop.com/a/blog/how-to-remember-speed-cubing-algorithms">SpeedCubeShop</a>):</p>
+
+<table>
+  <tr><th>Stage</th><th>Algorithm</th><th>What to actually remember</th></tr>
+  <tr><td>2 — White corners</td><td><span class="moves"><span class="trig">R U R' U'</span></span></td><td>The trigger itself. Already automatic.</td></tr>
+  <tr><td>3 — Right insert</td><td><span class="moves">U R U' R' · U' F' U F</span></td><td>Two do–undo breaths: <em>steer away with the right hand, escort home with the front.</em></td></tr>
+  <tr><td>3 — Left insert</td><td><span class="moves">U' L' U L · U F U' F'</span></td><td>Nothing new — it's the right insert in a mirror. Every move flips hand and prime.</td></tr>
+  <tr><td>4 — Yellow cross</td><td><span class="moves">F <span class="trig">R U R' U'</span> F'</span></td><td>One word: <em>F-sandwich</em>. The trigger wrapped in F … F'.</td></tr>
+  <tr><td>5 — Edge swap</td><td><span class="moves"><span class="trig">R U R'</span> U R U2 R' U</span></td><td>The genuinely new one. Rhythm: <em>up-over-down, U, up-over-OVER-down, U.</em> Only R and U.</td></tr>
+  <tr><td>6 — Corner cycle</td><td><span class="moves">U R U' L' · U R' U' L</span></td><td>The other new one. Two halves, same dance, side-primes swapped: <em>U R, U' L' — U R', U' L.</em></td></tr>
+  <tr><td>7 — Final twist</td><td><span class="moves">R' D' R D</span></td><td>Four moves. <em>Down-pair, up-pair.</em> Barely counts.</td></tr>
+</table>
+
+<p>So the real memorisation load: the <strong>edge swap</strong>, the <strong>corner cycle</strong>, and keeping the two <strong>inserts</strong> from blurring together. Everything else is the trigger wearing a costume.</p>
+
+<h2><span class="num">2.</span> How memory for this actually works</h2>
+
+<p>Three findings that come up again and again from cubers (<a href="https://www.cubelelo.com/blogs/cubing/how-to-remember-algorithms-in-cubing">Cubelelo</a>, <a href="https://www.speedsolving.com/threads/any-tips-for-remembering-algorithms.88317/">SpeedSolving forum</a>):</p>
+
+<ul>
+  <li><strong>Chunks, not letters.</strong> Don't recall eight letters; recall two four-move phrases. You've been doing this since Lesson 3 — the gold-highlighted halves on the solve card are the chunk boundaries. Say the chunks <em>aloud</em> while turning; the voice becomes the retrieval cue.</li>
+  <li><strong>Watch the pieces once.</strong> Run each algorithm slowly, once, watching what physically moves — the edge swap shuffling front and left, the merry-go-round circling three corners. A sequence with meaning is recalled by reconstructing the meaning, and you already have the meaning from the lessons. This is your existing superpower: your records show concepts stick instantly for you.</li>
+  <li><strong>Burst reps.</strong> 10–20 executions in a row, without stopping, is the standard prescription for pushing an algorithm from head to hands. You have a free tool for this: the <strong>self-scrambler loop</strong> — the edge swap, corner cycle, and final twist each undo themselves on repetition, so you can drill them on a solved cube endlessly.</li>
+</ul>
+
+<div class="insight">
+  <strong>Recall beats re-reading.</strong> The thing that builds memory is the moment of <em>struggling to retrieve</em> — not the moment of looking at the answer. Reading the solve card ten times does almost nothing; trying to produce the algorithm and <em>then</em> checking does almost everything. Every drill below is built on that: attempt first, card second.
+</div>
+
+<h2><span class="num">3.</span> Drill 1 — flashcards, right now</h2>
+
+<p>Cube in hand. For each card below: read the front, <strong>perform the algorithm from memory on the cube</strong>, then click to check. Wrong or blank? Do it three times with the card showing, then move on — you'll cycle back. Shuffle order in your head; don't go strictly left to right every time.</p>
+
+<div class="flashcards">
+  <div class="fcard"><div class="front">The Trigger</div><div class="hint">white corners</div><div class="back">R U R' U'</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">Right Insert</div><div class="hint">steer away, escort home</div><div class="back">U R U' R' U' F' U F</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">Left Insert</div><div class="hint">the mirror</div><div class="back">U' L' U L U F U' F'</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">F-Sandwich</div><div class="hint">yellow cross</div><div class="back">F R U R' U' F'</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">Edge Swap</div><div class="hint">front ↔ left</div><div class="back">R U R' U R U2 R' U</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">Corner Cycle</div><div class="hint">merry-go-round</div><div class="back">U R U' L' U R' U' L</div><div class="tap">tap to check</div></div>
+  <div class="fcard"><div class="front">Final Twist</div><div class="hint">repeat in pairs</div><div class="back">R' D' R D</div><div class="tap">tap to check</div></div>
+</div>
+
+<h2><span class="num">4.</span> Drill 2 — the fading card</h2>
+
+<p>This is the bridge from "drilled" to "solving unaided", and it's how you'll spend the next few days:</p>
+
+<ul class="steps">
+  <li><strong>Solve with the card face-down.</strong> Scramble, solve, and only flip the card over when you're genuinely stuck — after you've tried to retrieve the algorithm first.</li>
+  <li><strong>Count your peeks.</strong> One tally per flip, noting which stage. That number is your score for the solve.</li>
+  <li><strong>Between solves, burst-drill the peeked stage.</strong> Whatever you had to look up, run it 10–20 times via the self-scrambler loop before the next scramble.</li>
+  <li><strong>One or two solves a day beats ten in one sitting.</strong> Sleep consolidates this kind of memory; spacing the practice is doing invisible work. Three or four days of this typically gets the count to zero.</li>
+  <li><strong>Zero peeks = a fully unaided solve.</strong> That's the finish line.</li>
+</ul>
+
+<div class="insight">
+  <strong>The likely last holdout.</strong> Expect the corner cycle (<span class="moves">U R U' L' U R' U' L</span>) to be the final peek to die — it's the longest, the least frequent per solve, and the only one using both hands' faces. If it lingers, lean on its symmetry: the second half is the first half with the side-moves primed. You only memorise four moves; the other four are a rule.
+</div>
+
+<div class="practice">
+  <h4>Practice — this week</h4>
+  <p style="margin-bottom:10px"><strong>Today:</strong> the flashcard drill above, cube in hand, until you clear all seven cards once without flipping early. Then one face-down-card solve to set your baseline peek count.</p>
+  <p style="margin-bottom:10px"><strong>Each day after:</strong> one or two solves, card face-down, tally peeks, burst-drill whatever you peeked at.</p>
+  <p style="margin-bottom:0"><strong>When you hit zero peeks:</strong> that's the unaided solve — the mission, fully complete. Come tell me, and we'll decide if there's anywhere you want to go from there.</p>
+</div>
+
+<footer>
+  Lesson 8 of the Rubik's Cube curriculum · Sources: <a href="https://speedcubeshop.com/a/blog/how-to-remember-speed-cubing-algorithms">SpeedCubeShop on remembering algorithms</a> · <a href="https://www.cubelelo.com/blogs/cubing/how-to-remember-algorithms-in-cubing">Cubelelo</a> · <a href="https://www.speedsolving.com/threads/any-tips-for-remembering-algorithms.88317/">SpeedSolving community thread</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a> — or ask me, your teacher, anything that's unclear.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.fcard').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+});
+</script>
+</body>
+</html>

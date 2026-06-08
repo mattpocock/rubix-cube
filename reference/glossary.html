@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubik's Cube — Glossary</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+  header { margin-bottom: 32px; border-bottom: 3px solid var(--ink); padding-bottom: 18px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 6px;
+  }
+  h1 { font-size: 34px; line-height: 1.15; margin: 0 0 8px; font-weight: 700; }
+  .standfirst { font-size: 16px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 {
+    font-size: 14px; margin: 36px 0 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    border-bottom: 1px solid var(--border); padding-bottom: 6px;
+  }
+  dl { margin: 0; }
+  dt { font-weight: 700; font-size: 18px; margin: 18px 0 2px; }
+  dt .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 0.85em; background: #efece7; padding: 1px 7px; border-radius: 4px;
+    letter-spacing: 0.06em;
+  }
+  dd { margin: 0 0 4px; }
+  .avoid {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13.5px; color: var(--muted); margin-top: 3px;
+  }
+  .avoid strong { color: var(--accent); font-weight: 600; }
+  .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 1px 6px; border-radius: 4px; font-size: 0.88em;
+  }
+  footer {
+    margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 13px; color: var(--muted);
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .wrap { padding: 0; max-width: none; }
+    h1 { font-size: 26px; }
+    dt { font-size: 14px; margin-top: 10px; }
+    h2 { margin-top: 20px; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Reference</div>
+  <h1>Glossary</h1>
+  <p class="standfirst">Terminology for the beginner (layer-by-layer) method. Only terms Matt has demonstrated understanding of belong here.</p>
+</header>
+
+<h2>Anatomy</h2>
+<dl>
+  <dt>Center</dt>
+  <dd>The single fixed sticker in the middle of each face. Centers never move relative to each other — they define what colour each face must become.</dd>
+
+  <dt>Edge</dt>
+  <dd>A piece with two stickers, sitting between two centers. There are 12.</dd>
+
+  <dt>Corner</dt>
+  <dd>A piece with three stickers. There are 8.</dd>
+  <dd class="avoid"><strong>Avoid:</strong> "corner sticker" when the whole piece is meant — solve pieces, not stickers.</dd>
+
+  <dt>Layer</dt>
+  <dd>A horizontal third of the cube. The first layer is the white face plus its ring of side colours; the second is the middle band of edges; the last is the yellow layer.</dd>
+</dl>
+
+<h2>Notation</h2>
+<dl>
+  <dt>Face letters <span class="moves">F R U L D B</span></dt>
+  <dd>Front, Right, Up, Left, Down, Back. A bare letter means turn that face a quarter-turn clockwise, as if looking at that face head-on.</dd>
+
+  <dt>Prime <span class="moves">'</span></dt>
+  <dd>A quarter-turn counterclockwise. <span class="moves">R'</span> undoes <span class="moves">R</span>.</dd>
+
+  <dt>The trigger <span class="moves">R U R' U'</span></dt>
+  <dd>The four-move sequence used to insert all four white corners by repetition (1, 3, or 5 times). Disturbs the bottom layer temporarily but restores it each cycle.</dd>
+  <dd class="avoid"><strong>Avoid:</strong> "sexy move" in workspace files — same thing, but "trigger" is our canonical name.</dd>
+</dl>
+
+<h2>Technique</h2>
+<dl>
+  <dt>Solving grip</dt>
+  <dd>White face down, yellow center up, held that way for everything after the cross. The bottom is the trophy shelf; the top is the workbench.</dd>
+
+  <dt>Daisy</dt>
+  <dd>The staging pattern for the white cross — four white edge stickers around the yellow center, then each "petal" is matched to its center and dropped down with a 180° face turn.</dd>
+
+  <dt>Parking</dt>
+  <dd>Turning the top layer with <span class="moves">U</span> moves until a piece sits where an algorithm can act on it: a corner directly above its home slot, or an edge forming the upside-down T over its matching center.</dd>
+</dl>
+
+<footer>
+  Rubik's Cube reference · Living document — terms are added as they're learned · Questions? Ask your teaching agent.
+</footer>
+
+</div>
+</body>
+</html>

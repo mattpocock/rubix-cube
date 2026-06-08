@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 5 — Align the Cross: Making Yellow Edges Honest</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .bigalg {
+    text-align: center; margin: 32px 0;
+  }
+  .bigalg .moves {
+    font-size: 26px; padding: 14px 28px; background: var(--ink); color: var(--bg);
+    border-radius: 10px; display: inline-block;
+  }
+  .bigalg .moves .chunk2 { color: #ffd58a; }
+  .bigalg .cap {
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-top: 10px;
+  }
+  .face {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 3px; background: #1a1a1a; padding: 3px; border-radius: 6px;
+    vertical-align: middle;
+  }
+  .face div { border-radius: 3px; }
+  .figrow { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; margin: 24px 0; justify-content: center; }
+  .fig { text-align: center; }
+  .fig .cap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 220px;
+  }
+  .fig .casecount {
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 14px;
+    color: var(--accent); margin-top: 6px;
+  }
+  .W { background: var(--c-white); } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); }  .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); }
+  .X { background: var(--c-grey); }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .quiz {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+  }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 14px; margin: 8px 0; font-size: 15.5px; cursor: pointer;
+    font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 5</div>
+  <h1>Align the Cross: Making Yellow Edges&nbsp;Honest</h1>
+  <p class="standfirst">The cross is up — now its edges have to tell the truth about their side colours. One new algorithm, made of letters you already own.</p>
+</header>
+
+<p><strong>The grip does not change.</strong> Yellow on top, white on the bottom, F is the face at your chest. That holds for this lesson and every lesson left.</p>
+
+<p>Right now your yellow cross is up, but look at the four side stickers of those cross edges — the colours facing outward. They're almost certainly not matching the centers below them. This stage fixes that: each cross edge ends up sitting above its own center. Red over red, green over green, all the way round.</p>
+
+<h2><span class="num">1.</span> First, spin the top and count</h2>
+
+<p>Before any algorithm: turn the top layer (<span class="moves">U</span> moves only) one click at a time, and at each click count how many cross edges match the center below them. One of the four positions will give you the best count — and it's always one of these:</p>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="G"></div><div class="X"></div>
+      <div class="O"></div><div class="X"></div><div class="R"></div>
+      <div class="X"></div><div class="B"></div><div class="X"></div>
+    </div>
+    <div class="casecount">All four match — done ✓</div>
+    <div class="cap">Sometimes you get lucky. Skip to the next lesson's territory.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="G"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="R"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="casecount">Two adjacent match</div>
+    <div class="cap">The matched pair sit next to each other — e.g. back and right.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="G"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="X"></div><div class="B"></div><div class="X"></div>
+    </div>
+    <div class="casecount">Two opposite match</div>
+    <div class="cap">The matched pair face each other — e.g. front and back.</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>You can always get at least two to match — never exactly one or three.</strong> That's not luck, it's how edge arrangements work on the cube: the four edges' positions relative to each other only allow these outcomes. So spin until you find two (or four) matches. If you genuinely can't get two, an edge has been physically popped and reseated wrong at some point — same diagnosis as the impossible cases in Lesson 4.
+</div>
+
+<p><em>(These diagrams show the side-facing stickers of the cross edges as if peeled up onto the top — on the real cube you check them by looking at each side face: does the top-middle sticker match the center?)</em></p>
+
+<h2><span class="num">2.</span> The algorithm — all letters you own</h2>
+
+<div class="bigalg">
+  <span class="moves">R U R' U <span class="chunk2">R U2 R'</span> U</span>
+  <div class="cap">Swaps the FRONT and LEFT cross edges · only R and U — no F to get wrong</div>
+</div>
+
+<p>Read it out: <em>"R U R' — U — R U-two R' — U."</em> Nothing but R and U turns, so there's no F-direction trap this time. <span class="moves">U2</span> just means turn the top half a turn — two clicks. The shape to feel: it's almost your trigger, but instead of undoing the top each time, you keep feeding it — up, over, up, over-over, out.</p>
+
+<p>What it does: <strong>swaps the front and left cross edges</strong>, leaving the back and right edges where they are (<a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix, step 5</a>). It also shuffles the yellow corners around — which costs you nothing, because the corners are still unsolved anyway. This is a theme for the whole last layer: each algorithm protects what's already done and churns only what isn't.</p>
+
+<h2><span class="num">3.</span> The procedure</h2>
+
+<ul class="steps">
+  <li><strong>Spin the top</strong> (<span class="moves">U</span> clicks) to the position with the most matches. Four? Done. Two? Note whether they're adjacent or opposite.</li>
+  <li><strong>Two adjacent:</strong> rotate the whole cube so the matched pair sit at the <strong>back and right</strong>. The two liars are now at front and left — exactly where the algorithm swaps. Run it once.</li>
+  <li><strong>Two opposite:</strong> run the algorithm once from any position. It breaks the standoff — you'll now have an adjacent case. Go back to step 1.</li>
+  <li><strong>Finish:</strong> after the swap, spin the top to line everything up and check all four sides. Cross edges done.</li>
+</ul>
+
+<div class="insight">
+  <strong>This is the second cube-rotation decision of the solve.</strong> Like parking edges in Lesson 3, you rotate the <em>whole cube</em> to set up (matched pair to back-and-right), then keep it still for the whole algorithm. Worst case from a fresh cross is two runs: one to break an opposite pair, one to swap the adjacent liars.
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You spin the top and the best you can get is the green edge matching at the back and the red edge matching on the right. What now?</div>
+  <button class="opt" data-right="0">Run the algorithm immediately — orientation never matters for this stage.</button>
+  <button class="opt" data-right="1">That's already the set-up — matched pair at back and right means the two wrong edges are at front and left. Run the algorithm once.</button>
+  <button class="opt" data-right="0">Keep spinning — with patience you can always get three to match.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">After running the algorithm, the yellow corners look more scrambled than before. Did something go wrong?</div>
+  <button class="opt" data-right="0">Yes — the corners were collateral damage; redo the algorithm in reverse to restore them.</button>
+  <button class="opt" data-right="1">No — the algorithm only promises to protect solved work. The corners aren't solved yet, so shuffling them is free. Check the edges instead: that's what this stage is for.</button>
+  <button class="opt" data-right="0">Yes — corners should never move during an edge algorithm.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">The matching edges are front and back — opposite each other. What's the plan?</div>
+  <button class="opt" data-right="0">Rotate the cube so they're at back and right, then run the algorithm.</button>
+  <button class="opt" data-right="0">This case is impossible — re-check, because two matches are always adjacent.</button>
+  <button class="opt" data-right="1">Run the algorithm once from anywhere to break the opposite pair into an adjacent case, then set up properly and run it again.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">4.</span> What done looks like</h2>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+      <div class="Y"></div><div class="Y"></div><div class="Y"></div>
+      <div class="X"></div><div class="Y"></div><div class="X"></div>
+    </div>
+    <div class="cap">Top: yellow cross, as before.</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="G"></div><div class="X"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+      <div class="G"></div><div class="G"></div><div class="G"></div>
+    </div>
+    <div class="cap">Each side: a T shape — two solid rows plus the matching cross edge on top. Only the corners lie.</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The test is four T-shapes.</strong> Walk around the cube: every side should show its two solved rows <em>plus</em> the top-middle sticker matching. The only unsolved pieces left on the entire cube are the four yellow corners. Two stages remain: put those corners in the right places, then twist them yellow-side-up.
+</div>
+
+<div class="practice">
+  <h4>Practice — do this before the next session</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> From your current cube: make the cross, then align it. Verify the four T-shapes.</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Fresh scramble → everything you know → aligned cross, three times. Before touching the cube each time, say the case out loud: <em>"adjacent — pair to back-right"</em> or <em>"opposite — break it first."</em></p>
+  <p style="margin-bottom:0"><strong>3.</strong> Spot-check your spin-and-count: every solve, notice that exactly two or four edges match at the best position — never one or three. Seeing the rule hold builds trust in the read.</p>
+</div>
+
+<p>Next, Lesson 6: <strong>positioning the yellow corners</strong> — getting each corner into its right slot (even if twisted). After that, one stage remains.</p>
+
+<footer>
+  Lesson 5 of the Rubik's Cube curriculum · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · <a href="https://jperm.net/3x3">J Perm Beginner Guide</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a> — or ask me, your teacher, anything that's unclear.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('[data-quiz]').forEach(quiz => {
+  const feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right
+        ? '✓ Correct.'
+        : '✗ Not quite — re-read the section above and try again.';
+    });
+  });
+});
+</script>
+</body>
+</html>

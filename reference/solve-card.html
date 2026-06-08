@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubik's Cube — Solve Card</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+  header { margin-bottom: 28px; border-bottom: 3px solid var(--ink); padding-bottom: 18px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 6px;
+  }
+  h1 { font-size: 34px; line-height: 1.15; margin: 0 0 8px; font-weight: 700; }
+  .standfirst { font-size: 16px; color: var(--muted); font-style: italic; margin: 0; }
+  .stage {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 24px; margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .stage h2 { font-size: 21px; margin: 0 0 4px; }
+  .stage h2 .num { color: var(--accent); margin-right: 8px; }
+  .goal {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin: 0 0 14px;
+  }
+  .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 1px 7px; border-radius: 4px;
+    font-size: 0.88em; letter-spacing: 0.05em; font-weight: 700;
+  }
+  .alg {
+    display: inline-block; font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 17px; font-weight: 700; letter-spacing: 0.08em;
+    background: var(--ink); color: var(--bg);
+    padding: 8px 16px; border-radius: 8px; margin: 4px 0 8px;
+  }
+  .alg .chunk2 { color: #ffd58a; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+  }
+  td:first-child { width: 42%; }
+  ol, ul { margin: 8px 0; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+  p { margin: 0 0 10px; }
+  .rescue {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 8px;
+    padding: 12px 16px; margin: 12px 0 0;
+    font-size: 15px;
+  }
+  .rescue strong:first-child { color: #9a6b00; font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .check { font-size: 15px; color: var(--muted); font-style: italic; margin-top: 10px; }
+  .upnext {
+    border: 1px dashed var(--border); border-radius: 10px;
+    padding: 16px 24px; margin: 20px 0; color: var(--muted);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px;
+  }
+  footer {
+    margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 13px; color: var(--muted);
+  }
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .wrap { padding: 0; max-width: none; }
+    h1 { font-size: 26px; }
+    .stage { padding: 12px 16px; margin: 12px 0; }
+    .alg { font-size: 13px; padding: 5px 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Reference</div>
+  <h1>Solve Card</h1>
+  <p class="standfirst">The full solve in order, one stage per box. Complete — scramble to solved, all seven stages.</p>
+</header>
+
+<div class="stage">
+  <h2><span class="num">1.</span> White cross — the daisy</h2>
+  <p class="goal">Goal: four white edges around the white center, each side colour matching its center. No algorithms — intuition only.</p>
+  <ol>
+    <li><strong>Daisy:</strong> yellow center up. Bring all four white edge stickers around the yellow center (white petals on a yellow flower). Turn the top first if needed so you don't knock out a placed petal.</li>
+    <li><strong>Match:</strong> turn the top (<span class="moves">U</span> moves only) until a petal's <em>side colour</em> sits directly above the matching center.</li>
+    <li><strong>Drop:</strong> turn that face 180° (e.g. <span class="moves">F2</span>). Repeat for all four petals.</li>
+  </ol>
+  <p class="check">Done when: flipped over, white cross with all four side colours matching their centers. Half a cross is no cross.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">2.</span> White corners — the trigger</h2>
+  <p class="goal">Goal: first layer complete. Grip: white down, yellow up — the solving grip from here on.</p>
+  <div class="alg">R U R' U'</div>
+  <ol>
+    <li><strong>Find</strong> a white corner in the top layer.</li>
+    <li><strong>Park</strong> it (<span class="moves">U</span> moves) directly above its home slot — its two non-white colours match the two centers below.</li>
+    <li><strong>Hold</strong> it at top-front-right, home slot beneath it.</li>
+    <li><strong>Trigger</strong> until it drops in white-side-down: 1, 3, or 5 repeats. Check after each repeat; don't rotate the cube between repeats.</li>
+  </ol>
+  <div class="rescue"><strong>Rescue</strong> — corner stuck in the bottom layer (wrong slot or twisted): hold that slot at front-right, one trigger pops it into the top layer, then solve normally.</div>
+  <p class="check">Done when: solid white bottom <em>and</em> a solid bottom row ring on all four sides. The ring is the real test, not the white face.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">3.</span> Second layer — the two inserts</h2>
+  <p class="goal">Goal: four middle edges in. Hunt the top layer for edges with no yellow sticker.</p>
+  <ol>
+    <li><strong>Park:</strong> <span class="moves">U</span> moves until the edge's outward sticker matches the center below it — the upside-down T. Rotate the cube so that face is front.</li>
+    <li><strong>Pick the insert</strong> by where the <em>top</em> sticker's colour lives:</li>
+  </ol>
+  <table>
+    <tr><th>Top sticker matches…</th><th>Algorithm</th></tr>
+    <tr><td>Right center → <strong>right insert</strong></td><td><span class="alg">U R U' R' <span class="chunk2">U' F' U F</span></span></td></tr>
+    <tr><td>Left center → <strong>left insert</strong> (mirror)</td><td><span class="alg">U' L' U L <span class="chunk2">U F U' F'</span></span></td></tr>
+  </table>
+  <ul>
+    <li>Two four-move chunks, each with the trigger's do-undo rhythm. Say it as two breaths.</li>
+    <li>First move steers the edge <em>away</em> from its slot — trust it.</li>
+    <li>Mid-algorithm the first layer looks broken. It isn't — finish all eight moves.</li>
+    <li><span class="moves">F</span> = front face, clockwise <em>as you look straight at it</em> (top row swings right). A reversed F is the #1 way this "destroys" the first layer.</li>
+  </ul>
+  <div class="rescue"><strong>Rescue</strong> — edge stuck in the middle layer (wrong slot or flipped): hold its slot at front-right, do the right insert with whatever top edge lands there. The stuck edge pops up; solve it normally.</div>
+  <p class="check">Done when: four solid two-row walls, only the yellow layer scrambled. Two-thirds solved.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">4.</span> Yellow cross — the F-sandwich</h2>
+  <p class="goal">Goal: four yellow edge stickers facing up (a yellow cross on top). Ignore corners; ignore side colours. Read the pattern, don't hunt pieces.</p>
+  <div class="alg">F <span class="chunk2">R U R' U'</span> F'</div>
+  <p style="font-size:15px; margin:4px 0 10px;">The trigger wrapped in an F-sandwich: <em>F — trigger — F-prime.</em></p>
+  <table>
+    <tr><th>Top-face shape</th><th>Hold it…</th><th>Apply</th></tr>
+    <tr><td><strong>Dot</strong> (no edges up)</td><td>any way</td><td>3×</td></tr>
+    <tr><td><strong>L-shape</strong> (two adjacent)</td><td>L points back-left (like a 9)</td><td>2×</td></tr>
+    <tr><td><strong>Line</strong> (two opposite)</td><td>horizontal, left–right</td><td>1×</td></tr>
+  </table>
+  <ul>
+    <li>The chain is dot → L → line → cross. <strong>Re-read and re-orient between applications</strong> — don't fire blindly from one grip.</li>
+    <li>Side colours of the cross edges don't matter yet — that's stage 5.</li>
+  </ul>
+  <div class="rescue"><strong>Rescue</strong> — exactly 1 or 3 yellow edges up: impossible on a healthy cube. A piece is physically flipped; pop it out and reseat it. No algorithm fixes this.</div>
+  <p class="check">Done when: yellow cross on top, two-row walls still intact below.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">5.</span> Align the cross — the edge swap</h2>
+  <p class="goal">Goal: each cross edge sitting above its matching center. Only R and U turns — no F to get wrong.</p>
+  <div class="alg">R U R' U <span class="chunk2">R U2 R'</span> U</div>
+  <p style="font-size:15px; margin:4px 0 10px;">Swaps the <strong>front and left</strong> cross edges; back and right stay put. Shuffles unsolved corners — that's free.</p>
+  <ol>
+    <li><strong>Spin the top</strong> (<span class="moves">U</span> clicks) to the position with the most matches — always 2 or 4, never 1 or 3.</li>
+    <li><strong>Four match</strong> → done.</li>
+    <li><strong>Two adjacent match</strong> → rotate the cube so the matched pair are at <strong>back and right</strong>, run the algorithm once.</li>
+    <li><strong>Two opposite match</strong> → run it once from anywhere to break into the adjacent case, then set up and run again.</li>
+    <li>Finish with a top spin to line everything up.</li>
+  </ol>
+  <p class="check">Done when: four T-shapes — two solid rows plus matching cross edge on every side. Only the four yellow corners remain.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">6.</span> Position the corners — the merry-go-round</h2>
+  <p class="goal">Goal: every yellow corner in its home slot, twist irrelevant. A corner is "correct" if its three colours match the three faces it touches — any way up.</p>
+  <div class="alg">U R U' L' <span class="chunk2">U R' U' L</span></div>
+  <p style="font-size:15px; margin:4px 0 10px;">Cycles three corners; the <strong>top-front-right</strong> corner stays put. Right hand, left hand, alternating top–side.</p>
+  <ol>
+    <li><strong>Audit</strong> all four corners by colour-set. Count correct: always 0, 1, or 4 — never 2 or 3.</li>
+    <li><strong>Four</strong> → done. <strong>One</strong> → rotate the whole cube (not U!) so it's at top-front-right; run the algorithm; if needed run it once more, same grip.</li>
+    <li><strong>Zero</strong> → run once from any grip to create a correct corner, then handle as the one-correct case.</li>
+  </ol>
+  <p class="check">Done when: all four colour-set audits pass. May still look messy — twisted corners are next stage's job. Trust the audit, not the aesthetics.</p>
+</div>
+
+<div class="stage">
+  <h2><span class="num">7.</span> Orient the corners — the final twist</h2>
+  <p class="goal">Goal: a solved cube. Twist each corner in place until its yellow faces up. New letter: <span class="moves">D</span> = bottom layer, front row slides left (<span class="moves">D'</span> slides it right).</p>
+  <div class="alg">R' D' <span class="chunk2">R D</span></div>
+  <p style="font-size:15px; margin:4px 0 10px;">Twists whatever sits at <strong>top-front-right</strong>. Repeat in pairs — each corner takes 2 or 4 repetitions.</p>
+  <ol>
+    <li><strong>Hold</strong> a twisted corner at top-front-right.</li>
+    <li><strong>Run the four moves twice.</strong> Yellow up? Done. No? Twice more — always pairs, never odd.</li>
+    <li><strong>Turn U only</strong> (never the whole cube, never the bottom layers) to bring the next twisted corner to top-front-right. Repeat.</li>
+    <li><strong>Finish</strong> with U turns to line up the top layer.</li>
+  </ol>
+  <div class="rescue"><strong>Keep going</strong> — mid-step the bottom layers look destroyed. That's the algorithm borrowing pieces; it repays everything as the last corner finishes. The only real mistakes are stopping early, rotating the cube, or moving the bottom layers between corners.</div>
+  <p class="check">Done when: six flat faces. The cube is solved.</p>
+</div>
+
+<footer>
+  Rubik's Cube reference · See also the <a href="glossary.html">Glossary</a> · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix</a> · <a href="https://jperm.net/3x3">J Perm</a> · Questions? Ask your teaching agent.
+</footer>
+
+</div>
+</body>
+</html>

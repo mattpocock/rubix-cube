@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 7 — The Final Twist: Orient the Corners</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .bigalg {
+    text-align: center; margin: 32px 0;
+  }
+  .bigalg .moves {
+    font-size: 26px; padding: 14px 28px; background: var(--ink); color: var(--bg);
+    border-radius: 10px; display: inline-block;
+  }
+  .bigalg .moves .chunk2 { color: #ffd58a; }
+  .bigalg .cap {
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-top: 10px;
+  }
+  .face {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 3px; background: #1a1a1a; padding: 3px; border-radius: 6px;
+    vertical-align: middle;
+  }
+  .face div { border-radius: 3px; }
+  .figrow { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; margin: 24px 0; justify-content: center; }
+  .fig { text-align: center; }
+  .fig .cap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 220px;
+  }
+  .W { background: var(--c-white); } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); }  .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); }
+  .X { background: var(--c-grey); }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .quiz {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+  }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 14px; margin: 8px 0; font-size: 15.5px; cursor: pointer;
+    font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 7 · The Last One</div>
+  <h1>The Final Twist: Orient the&nbsp;Corners</h1>
+  <p class="standfirst">Every piece is home. Some corners just sit twisted. Four moves, repeated patiently, finish the cube — and your first full solve.</p>
+</header>
+
+<p><strong>The grip does not change.</strong> Yellow on top, white down, F at your chest — one last time. From positioned corners, the only thing left is twisting some corners in place so their yellow stickers face up. This lesson's algorithm does exactly that, and nothing else survives it being wrong — so it comes with the solve's biggest warning, which we'll get to.</p>
+
+<h2><span class="num">1.</span> One new letter: D</h2>
+
+<p>This algorithm uses the <strong>bottom layer</strong> for the first time. <span class="moves">D</span> is the Down face — clockwise <em>as you look at it from below</em>, which means the front-bottom row slides to your <strong>left</strong>. <span class="moves">D'</span> slides it right. Same sanity ritual as every face: <span class="moves">D</span> then <span class="moves">D'</span> should change nothing (<a href="https://ruwix.com/the-rubiks-cube/notation/">Ruwix notation</a>).</p>
+
+<h2><span class="num">2.</span> The algorithm — four moves, repeated</h2>
+
+<div class="bigalg">
+  <span class="moves">R' D' <span class="chunk2">R D</span></span>
+  <div class="cap">Twists the TOP-FRONT-RIGHT corner · repeat the four moves until its yellow faces up</div>
+</div>
+
+<p>That's it — the shortest algorithm of the method (<a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix, step 7</a>). It works on one corner at a time: whatever sits at <strong>top-front-right</strong> gets twisted one-third of a turn for every <em>two</em> repetitions. So each corner needs the four moves either <strong>twice or four times</strong> — after every second repetition, glance at the top-front-right sticker: yellow up means that corner is done.</p>
+
+<div class="insight">
+  <strong>The cube will look destroyed. Keep going.</strong> Mid-procedure, your finished white layer and second layer will look mangled. This is the step where, per Ruwix, "most people get lost" — they panic and stop halfway. Don't. The damage is a loan: the algorithm borrows pieces from the bottom layers and pays every one back by the time <em>all</em> the corners are oriented. The only way to actually break the cube here is to stop early or move the bottom two layers between corners.
+</div>
+
+<h2><span class="num">3.</span> The procedure</h2>
+
+<ul class="steps">
+  <li><strong>Hold a twisted corner at top-front-right.</strong> Get it there by turning <strong>U only</strong> — for the first corner, turning the whole cube is still fine, but once you've started the step, U turns only.</li>
+  <li><strong>Run <span class="moves">R' D' R D</span> twice.</strong> Yellow on top at front-right? Done with this corner. Not yet? Run it twice more — never once more, always in pairs.</li>
+  <li><strong>Turn U</strong> (just the top layer — <em>not</em> the whole cube, and never the bottom layers) to bring the next twisted corner to top-front-right. Ignore how broken everything below looks.</li>
+  <li><strong>Repeat</strong> until every yellow sticker faces up. The bottom two layers snap back to solved exactly as the last corner finishes.</li>
+  <li><strong>Final U turns:</strong> spin the top layer until its sides match. Look at the cube. <strong>It's solved.</strong></li>
+</ul>
+
+<div class="insight">
+  <strong>Why U turns this time, when Lesson 6 forbade them?</strong> In Lesson 6 the cross was aligned and U turns would un-align it — so you rotated the whole cube instead. Here it's reversed: the algorithm's "loan" lives in the <em>bottom two layers</em>, anchored to your fixed grip. Rotate the whole cube and the loan never gets repaid. U turns are safe because the whole top layer gets re-aligned in one go at the very end. Each stage protects whatever is solved — and right now, the fragile part is below, not above.
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You've fixed two corners and the white layer looks wrecked. What do you do?</div>
+  <button class="opt" data-right="0">Stop and repair the white layer before continuing — never let solved work degrade.</button>
+  <button class="opt" data-right="1">Nothing — carry on. The damage is temporary and self-repairs exactly when the last corner is oriented.</button>
+  <button class="opt" data-right="0">Undo your last few moves; the algorithm has gone wrong.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">Corner done, next twisted corner is at the back-left. How do you bring it to the work-station at top-front-right?</div>
+  <button class="opt" data-right="0">Rotate the whole cube, like in Lesson 6 — U moves would break the cross alignment.</button>
+  <button class="opt" data-right="1">Turn the top layer (U moves) only. Rotating the cube here would strand the borrowed bottom-layer pieces forever.</button>
+  <button class="opt" data-right="0">Either works — they're equivalent.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">After two repetitions of <span class="moves">R' D' R D</span>, the corner's yellow sticker still isn't on top. What now?</div>
+  <button class="opt" data-right="0">Run it once more — three total usually does it.</button>
+  <button class="opt" data-right="1">Run it twice more. Repetitions always come in pairs: two twists it one-third, four twists it the other way.</button>
+  <button class="opt" data-right="0">The corner must be in the wrong position — go back to Lesson 6.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">4.</span> What done looks like</h2>
+
+<p>This is the only stage with no consolation prize for "done": done is a <strong>solved cube</strong>. Six flat faces. And you got there from a genuine scramble, stage by stage, knowing what each one did:</p>
+
+<p>White cross → white corners → second layer → yellow cross → align the cross → position the corners → <strong>the final twist</strong>. That chain is your whole method, and it's on one page: the <a href="../reference/solve-card.html">solve card</a>.</p>
+
+<div class="practice">
+  <h4>Practice — the one that counts</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> Warm up the twist on a solved cube: run <span class="moves">R' D' R D</span> twice — the front-right corner twists and the cube looks hurt. Run it four more times — everything heals. That's the loan being repaid, in miniature.</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Scramble the cube properly — a couple of dozen random moves, no peeking at patterns.</p>
+  <p style="margin-bottom:0"><strong>3.</strong> Solve it, start to finish. Solve card open is allowed — the mission was never blind memorisation, it was solving with understanding. When the last face clicks flat: that's the mission, complete. Come tell me.</p>
+</div>
+
+<p>There is no Lesson 8. There's just a scrambled cube and you.</p>
+
+<footer>
+  Lesson 7 of the Rubik's Cube curriculum · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · <a href="https://jperm.net/3x3">J Perm Beginner Guide</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a> — or ask me, your teacher, anything that's unclear.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('[data-quiz]').forEach(quiz => {
+  const feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right
+        ? '✓ Correct.'
+        : '✗ Not quite — re-read the section above and try again.';
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1 — Anatomy, Notation & the White Cross</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 {
+    font-size: 28px; margin: 64px 0 16px;
+    padding-top: 8px;
+  }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  /* face diagrams */
+  .face {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 34px);
+    grid-template-rows: repeat(3, 34px);
+    gap: 3px; background: #1a1a1a; padding: 3px; border-radius: 6px;
+    vertical-align: middle;
+  }
+  .face div { border-radius: 3px; }
+  .figrow { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 24px 0; }
+  .fig { text-align: center; }
+  .fig .cap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; color: var(--muted); margin-top: 8px;
+  }
+  .W { background: var(--c-white); } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); }  .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); }
+  .X { background: var(--c-grey); }
+  /* notation cards */
+  .notation-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px; margin: 24px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .ncard {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; font-size: 15px;
+  }
+  .ncard .letter { font-size: 26px; font-weight: 800; font-family: 'SF Mono', Consolas, monospace; }
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  /* quiz */
+  .quiz {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+  }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 11px 14px; margin: 8px 0; font-size: 15.5px; cursor: pointer;
+    font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 1</div>
+  <h1>Anatomy, Notation &amp; the White&nbsp;Cross</h1>
+  <p class="standfirst">Stop thinking in stickers, start thinking in pieces — then build the foundation of every solve you'll ever do.</p>
+</header>
+
+<p>Grab your cube. Seriously — this lesson is useless without it in your hands. By the end of today you will be able to build a white cross on any scrambled cube, which is the first of the seven stages of the full solve.</p>
+
+<h2><span class="num">1.</span> The cube is pieces, not stickers</h2>
+
+<p>The single biggest beginner misconception is that you're moving 54 stickers around. You're not. The cube is made of <strong>26 little plastic pieces</strong>, and each piece's stickers are glued on forever. A piece with white and red on it will <em>always</em> have white and red on it. You never fix stickers — you move whole pieces into place.</p>
+
+<p>There are exactly three kinds of piece:</p>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="cap"><strong>6 centers</strong> — 1 sticker each</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+      <div class="W"></div><div class="X"></div><div class="W"></div>
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+    </div>
+    <div class="cap"><strong>12 edges</strong> — 2 stickers each</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="W"></div><div class="X"></div><div class="W"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+      <div class="W"></div><div class="X"></div><div class="W"></div>
+    </div>
+    <div class="cap"><strong>8 corners</strong> — 3 stickers each</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The key insight:</strong> centers never move relative to each other. They're bolted to the core. The white center is <em>always</em> opposite the yellow center; red is always opposite orange; blue is always opposite green. So the center defines what colour that face will be when solved. "Solving the white face" really means "moving the 8 white pieces to surround the white center."
+</div>
+
+<p>Try it now: turn any face of your cube and watch the centers. Twist all you like — the six centers never change position relative to each other.</p>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">A friend says: "I peeled off two stickers and swapped them to fix my cube." What kind of pieces could they have ruined the cube for, and why is sticker-thinking wrong?</div>
+  <button class="opt" data-right="0">Nothing's wrong — fixing stickers is the same as moving pieces.</button>
+  <button class="opt" data-right="1">Stickers belong to physical pieces. An edge always carries the same 2 colours, a corner the same 3 — swapping stickers can create a piece that can't exist, making the cube unsolvable.</button>
+  <button class="opt" data-right="0">It's fine as long as the swapped stickers are on the same face.</button>
+  <div class="feedback"></div>
+</div>
+
+<h2><span class="num">2.</span> Notation: six letters, one apostrophe</h2>
+
+<p>Every solution guide on earth uses the same shorthand for moves. Hold the cube still — the letters name the faces <em>from your point of view</em>:</p>
+
+<div class="notation-grid">
+  <div class="ncard"><span class="letter">F</span> — <strong>Front</strong><br>the face looking at you</div>
+  <div class="ncard"><span class="letter">B</span> — <strong>Back</strong><br>the face away from you</div>
+  <div class="ncard"><span class="letter">U</span> — <strong>Up</strong><br>the top face</div>
+  <div class="ncard"><span class="letter">D</span> — <strong>Down</strong><br>the bottom face</div>
+  <div class="ncard"><span class="letter">R</span> — <strong>Right</strong><br>the right-hand face</div>
+  <div class="ncard"><span class="letter">L</span> — <strong>Left</strong><br>the left-hand face</div>
+</div>
+
+<p>Three rules for how the letters become moves:</p>
+<ul>
+  <li>A letter alone — <span class="moves">R</span> — means turn that face <strong>90° clockwise, as if you were looking directly at that face</strong>.</li>
+  <li>A letter with an apostrophe — <span class="moves">R'</span> (say "R prime") — means 90° <strong>counter-clockwise</strong>.</li>
+  <li>A letter with a 2 — <span class="moves">R2</span> — means a <strong>half turn</strong> (180°, direction doesn't matter).</li>
+</ul>
+
+<div class="insight">
+  <strong>The trap everyone falls into:</strong> "clockwise" is judged <em>as if that face were in front of you</em>. From where you sit, a clockwise <span class="moves">R</span> turns the right face <em>away</em> from you at the top, but a clockwise <span class="moves">L</span> turns the left face <em>towards</em> you at the top. They look like opposite motions from your chair — because you'd be looking at those faces from opposite sides. When in doubt, physically rotate the cube so the face you're turning points at you, check the direction, then rotate back.
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">Hold your cube and physically perform <span class="moves">R U R' U'</span>, then repeat the same four moves five more times (six total). What happens?</div>
+  <button class="opt" data-right="0">The cube gets progressively more scrambled forever.</button>
+  <button class="opt" data-right="1">The cube returns exactly to where it started. (If yours didn't, one of your turn directions is wrong — recheck the "clockwise as if facing you" rule.)</button>
+  <button class="opt" data-right="0">Only the top layer returns to where it started.</button>
+  <div class="feedback"></div>
+</div>
+
+<p>That little sequence, <span class="moves">R U R' U'</span>, is nicknamed the <em>sexy move</em> by cubers. The fact that six repeats restore the cube is your built-in notation test — use it whenever you're unsure of your turning directions.</p>
+
+<h2><span class="num">3.</span> Your first skill: the white cross</h2>
+
+<p>The full beginner solve has seven stages. Today is stage one: get the four white <em>edge</em> pieces around the white center, each one also matching the coloured center on its side. Like this:</p>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+      <div class="W"></div><div class="W"></div><div class="W"></div>
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+    </div>
+    <div class="cap">White cross (white face)</div>
+  </div>
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="R"></div><div class="X"></div>
+      <div class="X"></div><div class="R"></div><div class="X"></div>
+      <div class="X"></div><div class="X"></div><div class="X"></div>
+    </div>
+    <div class="cap">…and each side edge matches its center</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>Half a cross is no cross:</strong> a white "plus" where the side colours <em>don't</em> match their centers is wrong, even though the white face looks right. Remember — pieces, not stickers. The white-red edge has exactly one home: between the white center and the red center.
+</div>
+
+<h3>The daisy technique</h3>
+
+<p>Building the cross directly is fiddly. The beginner-friendly route is to build it upside down first — a pattern called the <strong>daisy</strong> — then convert it. Hold the cube with the <strong>yellow center facing up</strong> the whole time.</p>
+
+<ol class="steps">
+  <li><strong>Make the daisy.</strong> Get all four white edge stickers around the yellow center, like white petals on a yellow flower. No algorithms here — just turn faces to bring white edges up to the top layer. The only rule: when moving a new white edge up, give the top face a turn first if needed, so you don't knock out a petal you already placed.</li>
+  <li><strong>Match a petal to its center.</strong> Look at the <em>side</em> colour of one petal (the non-white sticker). Turn the top face (<span class="moves">U</span> moves only) until that side colour sits directly above the center of the same colour — e.g. the white-red petal above the red center.</li>
+  <li><strong>Drop it down.</strong> Turn that face 180° (e.g. <span class="moves">F2</span> if it's the front face). The petal flips down to the bottom, landing white-side-down next to the white center — exactly where it belongs.</li>
+  <li><strong>Repeat for the other three petals.</strong> Match, drop. Match, drop. Match, drop. Flip the cube over: white cross, side colours matching. Done.</li>
+</ol>
+
+<div class="figrow">
+  <div class="fig">
+    <div class="face">
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+      <div class="W"></div><div class="Y"></div><div class="W"></div>
+      <div class="X"></div><div class="W"></div><div class="X"></div>
+    </div>
+    <div class="cap">The daisy (yellow face up)</div>
+  </div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">You've made the daisy. One petal is the white-blue edge. What do you do with it?</div>
+  <button class="opt" data-right="0">Turn the top until the white sticker is above the blue center, then turn that face 180°.</button>
+  <button class="opt" data-right="1">Turn the top until the <em>blue</em> sticker is directly above the <em>blue</em> center, then turn that face 180°.</button>
+  <button class="opt" data-right="0">Drop it down anywhere — you can fix the side colours later.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="practice">
+  <h4>Practice — do this before the next session</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> Scramble your cube thoroughly (25+ random moves). Build the daisy, then convert it to the white cross. Time doesn't matter; correctness does — check all four side colours match their centers.</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Repeat until you can do it three times in a row without getting stuck.</p>
+  <p style="margin-bottom:0"><strong>3.</strong> Stretch goal: as you scramble, call out the notation of each move you make (<span class="moves">R</span>, <span class="moves">F'</span>, <span class="moves">U2</span>…) to drill the letters into your hands.</p>
+</div>
+
+<p>When the cross feels routine, you're ready for Lesson 2: the white <strong>corners</strong>, which completes the entire first layer — and introduces your first real algorithm.</p>
+
+<footer>
+  Lesson 1 of the Rubik's Cube curriculum · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · <a href="https://solvethecube.com/">SolveTheCube</a> · Stuck? Ask in <a href="https://reddit.com/r/Cubers">r/Cubers</a>
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('[data-quiz]').forEach(quiz => {
+  const feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(b => {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right
+        ? '✓ Correct — that\'s the piece-thinking that makes the rest of the solve make sense.'
+        : '✗ Not quite. Re-read the insight box above, then try again.';
+    });
+  });
+});
+</script>
+</body>
+</html>
