@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 19 — What F2L Actually Is: From First Principles</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<style>
+  /* lesson-specific only — shared course styles live in assets/lesson.css */
+
+  /* the two-layers schematic */
+  .stack { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 10px 0 6px; }
+  .layer { display: grid; grid-template-columns: repeat(3, 34px); grid-template-rows: repeat(3, 16px);
+           gap: 3px; padding: 8px; border-radius: 8px; }
+  .layer span { border-radius: 3px; border: 1px solid rgba(0,0,0,.18); }
+  .stack .lbl { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 700;
+                letter-spacing: .04em; text-align: center; }
+  .stack .brace { font-family: -apple-system, sans-serif; font-size: 12.5px; color: var(--muted); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 26px 0; }
+  @media (max-width: 560px){ .split { grid-template-columns: 1fr; } }
+  .panel { border: 1px solid var(--border); border-radius: 12px; background: var(--card); padding: 18px 20px; }
+  .panel h4 { margin: 0 0 6px; font-family: -apple-system, sans-serif; font-size: 13px;
+              letter-spacing: .06em; text-transform: uppercase; }
+  .panel.bench h4 { color: #9a6b00; } .panel.goal h4 { color: var(--good); }
+  .panel p { font-size: 15.5px; margin: 0; }
+
+  /* piece chips (real colours) */
+  .chip { display: inline-grid; gap: 2px; vertical-align: middle; }
+  .chip.corner { grid-template-columns: repeat(3, 16px); }
+  .chip.edge   { grid-template-columns: repeat(2, 16px); }
+  .chip i { height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); display: block; }
+  .cw{background:#f4f2ec} .cg{background:#3a9d52} .cr{background:#c0392b}
+  .cb{background:#2f6fce} .co{background:#e07b1a} .cy{background:#f4cf28}
+
+  .pieces { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
+  @media (max-width: 520px){ .pieces { grid-template-columns: 1fr; } }
+  .pieces .pc { border: 1px solid var(--border); border-radius: 12px; background: var(--card);
+                padding: 16px; text-align: center; }
+  .pieces .pc .what { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing:.06em;
+                      text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+  .pieces .pc .nm { font-size: 15px; margin-top: 10px; }
+
+  .map { list-style: none; padding: 0; margin: 22px 0; }
+  .map li { border: 1px solid var(--border); border-radius: 10px; background: var(--card);
+            padding: 12px 16px; margin-bottom: 10px; font-size: 16px; }
+  .map li b { font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing:.04em;
+              text-transform: uppercase; color: var(--accent); }
+
+  /* trainer pieces */
+  .slotq { text-align: center; margin: 0 0 14px; }
+  .slotq .q { font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+  .slotq .faces { display: inline-flex; gap: 8px; align-items: center; }
+  .slotq .faces i { width: 30px; height: 30px; border-radius: 5px; border: 1px solid rgba(0,0,0,.25); }
+  .pad.opts { grid-template-columns: repeat(3, 1fr); }
+  .pad.opts button { padding: 14px 6px; line-height: 1.3; }
+  .pad.opts .og { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 19 · F2L — first two layers, the foundation</div>
+  <h1>What F2L Actually Is</h1>
+  <p class="standfirst">Lessons 15–18 threw you straight into pairs, scoops and triggers. Let's stop and build the picture underneath them — slowly, in real colours. Once this clicks, those four lessons become obvious.</p>
+</header>
+
+<p>You told me F2L isn't landing — and you're right that something's missing. It isn't the moves (you already own them). It's the <em>mental model</em> they sit on. So forget the trainers for now. This lesson has <strong>no new algorithm</strong>. Its only job is to make you see what F2L <em>is</em>, so the rest stops feeling like a pile of unrelated tricks.</p>
+
+<h2><span class="num">1.</span> The cube is three layers — and two of them are the job</h2>
+
+<p>Hold the cube the way you always solve: <strong>white on the bottom, yellow on top</strong> — the <a href="../reference/glossary.html">solving grip</a> you've used since lesson 2. <strong>The grip never changes in this lesson.</strong> Stacked top to bottom, the cube is three slices:</p>
+
+<div class="stack">
+  <div class="lbl" style="color:#9a6b00">TOP — yellow layer · your free workbench</div>
+  <div class="layer" style="background:#fbf3d2">
+    <span class="cy"></span><span class="cy"></span><span class="cy"></span>
+    <span class="cy"></span><span class="cy"></span><span class="cy"></span>
+    <span class="cy"></span><span class="cy"></span><span class="cy"></span>
+  </div>
+  <div class="brace">▲ scratch space — you don't care what's up here yet</div>
+  <div class="layer" style="background:#eef4fb">
+    <span class="cg"></span><span class="cr"></span><span class="cb"></span>
+    <span class="cg"></span><span class="cr"></span><span class="cb"></span>
+    <span class="cg"></span><span class="cr"></span><span class="cb"></span>
+  </div>
+  <div class="layer" style="background:#eef4fb">
+    <span class="cw"></span><span class="cw"></span><span class="cw"></span>
+    <span class="cw"></span><span class="cw"></span><span class="cw"></span>
+    <span class="cw"></span><span class="cw"></span><span class="cw"></span>
+  </div>
+  <div class="lbl" style="color:#2e7d32">BOTTOM TWO — white layer + middle band · the goal</div>
+</div>
+
+<div class="split">
+  <div class="panel goal">
+    <h4>The goal — bottom two layers</h4>
+    <p>The white face <em>and</em> the band of edges just above it. "First Two Layers" is literally these two slices, solved together. When they're done, only the yellow top is left — and you already own OLL + PLL for that.</p>
+  </div>
+  <div class="panel bench">
+    <h4>The workbench — top layer</h4>
+    <p>Free space. You bring pieces up here, assemble them, and drop them down into the goal. Nothing up top is "wrong" — it's where work happens. This is the idea every F2L move depends on.</p>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>Why this is the big win.</strong> Your old solve did the bottom two layers in <em>two separate passes</em> — stage 2 placed all four corners, then stage 3 threaded the four middle edges, and every edge insert briefly knocked a corner back out. F2L does the bottom two layers in <strong>one pass</strong>, with nothing re-disturbed. <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">[Ruwix]</a>
+</div>
+
+<h2><span class="num">2.</span> The goal breaks into four identical little jobs</h2>
+
+<p>Look at the bottom two layers as four <strong>corners</strong>, each with the <strong>edge</strong> standing right beside it. That corner-spot plus its neighbouring edge-gap is one <strong>slot</strong>. Four corners → four slots → four identical jobs. Fill all four and the first two layers are done.</p>
+
+<p>You always work the slot at the <strong>front-right</strong>, and rotate the whole cube to bring each of the four there in turn — exactly like you already do. Here's that front-right slot, empty, with its real centre colours showing:</p>
+
+<div style="text-align:center;margin:24px 0">
+  <span data-cube="corner:0;edge:null;slot:1;centers:1"></span>
+  <p style="font-size:14px;color:var(--muted);max-width:420px;margin:8px auto 0">
+    The dashed column is the empty front-right slot. The <span style="color:#2e7d32;font-weight:700">green</span> centre sits to its front, the <span style="color:#c0392b;font-weight:700">red</span> centre to its right, <span style="color:#b58a00;font-weight:700">yellow</span> on top.</p>
+</div>
+
+<h2><span class="num">3.</span> Each slot wants exactly two pieces — and you can name them by colour</h2>
+
+<p>This is the part the earlier lessons skipped over, and it's the heart of everything. A slot sits <strong>between two faces</strong> — the front-right slot lives between the <strong>green</strong> face and the <strong>red</strong> face. So the only two pieces that belong in it are the two pieces wearing <em>those</em> colours:</p>
+
+<div class="pieces">
+  <div class="pc">
+    <div class="what">The corner for this slot</div>
+    <span class="chip corner"><i class="cw"></i><i class="cg"></i><i class="cr"></i></span>
+    <div class="nm">The one corner with <strong>white + green + red</strong>. (Every bottom corner has white — it's the bottom face — plus the two slot colours.)</div>
+  </div>
+  <div class="pc">
+    <div class="what">The edge for this slot</div>
+    <span class="chip edge"><i class="cg"></i><i class="cr"></i></span>
+    <div class="nm">The one edge with <strong>green + red</strong> — no white, no yellow. The middle-band edge that shares the slot's two colours.</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The pairing rule, once and for all.</strong> A slot's two pieces are the ones that carry its <strong>two side colours</strong>. The corner = white + those two; the edge = just those two. That corner and that edge are <strong>partners</strong> — together they're a <a href="../reference/glossary.html">pair</a>. Move the slot to a blue-and-red gap and the rule is identical: you want the white-blue-red corner and the blue-red edge.
+</div>
+
+<h2><span class="num">4.</span> The one idea of F2L: join first, then drop together</h2>
+
+<p>Here's the whole method in two pictures. <strong>The old way</strong> put the corner in, then — to add the edge — had to pull the corner back out and rebuild it. Wasted work. <strong>F2L</strong> snaps the partners together <em>up on the workbench first</em>, then drops <strong>both at once</strong> into the slot. One motion, nothing disturbed.</p>
+
+<div style="text-align:center;margin:24px 0">
+  <span data-cube="white:R;edge:UF;slot:1;centers:1;real:1"></span>
+  <p style="font-size:14px;color:var(--muted);max-width:440px;margin:8px auto 0">
+    The white-green-red corner and the green-red edge, sitting together up top — a <strong>joined pair</strong> — right above their empty slot. A single insert carries both down. <em>That</em> is F2L.</p>
+</div>
+
+<div class="note">
+  <strong>So what were lessons 15–18?</strong> Every one of them is just <em>how to reach that joined-pair picture</em> from a different starting mess — then the same little insert finishes it. Re-read them with this lens and they'll click:
+  <ul class="map" style="margin-top:14px">
+    <li><b>Lesson 15</b> — the pair is already joined and ready → just insert it (<span class="moves">R U R'</span> / <span class="moves">F' U' F</span>).</li>
+    <li><b>Lesson 16</b> — both pieces are up top but apart → "scoop" them into a joined pair, then insert.</li>
+    <li><b>Lesson 17</b> — the edge is trapped down in the middle → evict it up to the workbench first (<span class="moves">R U R'</span>), then it's a lesson-16 case.</li>
+    <li><b>Lesson 18</b> — a slot looks full but is wrong → empty it (<span class="moves">R U R'</span>), then rebuild the pair.</li>
+  </ul>
+</div>
+
+<h2><span class="num">5.</span> One win: name a slot's two pieces</h2>
+
+<p>No moves to drill today — just the rule from §3, because everything else stands on it. A slot shows its two side colours; pick the <strong>corner + edge</strong> that belong in it. The right pair wears exactly those two colours (corner adds white). Guided shows the rule; Blind makes you call it. Goal: <strong>five in a row</strong>.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Name-the-Pair Trainer</h4>
+  <p class="sub" id="sub">Read the slot's two side colours, then pick the pair that belongs.</p>
+  <div class="slotq">
+    <div class="q">This slot sits between these two faces:</div>
+    <div class="faces" id="faces"></div>
+  </div>
+  <div class="pad opts" id="pad"></div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="mode" class="on">Guided</button></div>
+  </div>
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now, on the cube — no algorithms:</strong> solve your white cross. Then point at each of the four slots in turn and <em>say out loud</em> the two pieces it wants ("this slot is blue–orange → white-blue-orange corner + blue-orange edge"). Then physically find those two pieces anywhere on the cube. That's the whole foundation — locating partners.</p>
+  <p style="margin-bottom:10px"><strong>Then re-read</strong> <a href="0015-pairs-not-pieces.html">Lesson 15</a> with §4's picture in mind. It should read completely differently now.</p>
+  <p style="margin-bottom:0"><strong>Primary source:</strong> <a href="https://jperm.net/3x3">J Perm — F2L</a>, the most trusted F2L tutorial. Watch the first couple of minutes where he explains the corner-and-edge pair idea before any case — that's exactly this lesson, in motion.</p>
+</div>
+
+<p style="font-size:16px;color:var(--muted)">I'm your teacher — if any single step here still feels like a leap, tell me which one and I'll slow it down further. We don't move on until this picture is solid.</p>
+
+<footer>
+  Lesson 19 of the Rubik's Cube curriculum · F2L (first two layers), the foundation · Sources: <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">Ruwix — F2L</a> · <a href="https://www.speedcube.us/blogs/speedcubing-solutions/3x3-beginner-f2l-first-two-layers-of-cfop-method">speedcube.us — Beginner F2L</a> · <a href="https://jperm.net/3x3">J Perm — F2L</a> · Builds toward <a href="0015-pairs-not-pieces.html">Lesson 15</a>–<a href="0018-fix-a-wrong-slot.html">18</a> · See also the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Anything unclear? Ask me — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script src="../assets/cube-render.js"></script>
+<script>
+/* ---- Name-the-Pair trainer ------------------------------------------ */
+(function () {
+  // colour key: g green, r red, b blue, o orange. Each case = a slot's two side colours.
+  var COL = { g:'#3a9d52', r:'#c0392b', b:'#2f6fce', o:'#e07b1a', w:'#f4f2ec' };
+  var NAME = { g:'green', r:'red', b:'blue', o:'orange' };
+  var SLOTS = [ ['g','r'], ['b','o'], ['g','o'], ['b','r'], ['r','o'], ['g','b'] ];
+
+  function chip(cls, cols){
+    return '<span class="chip '+cls+'">'+cols.map(function(c){return '<i style="background:'+COL[c]+'"></i>';}).join('')+'</span>';
+  }
+  function pairCell(cols){ // cols = the slot's two side colours
+    return '<span class="og">'+chip('corner',['w',cols[0],cols[1]])+chip('edge',[cols[0],cols[1]])+'</span>';
+  }
+  // a wrong option: swap one of the two colours for a different one
+  function wrong(cols, seed){
+    var all=['g','r','b','o'], other=all.filter(function(c){return cols.indexOf(c)<0;});
+    var rep = other[seed % other.length];
+    return (seed % 2 === 0) ? [rep, cols[1]] : [cols[0], rep];
+  }
+
+  var order=[], idx=0, streak=0, best=0, blind=false, locked=false, cur=null;
+  var facesEl=document.getElementById('faces'), padEl=document.getElementById('pad'), msgEl=document.getElementById('msg');
+  var streakEl=document.getElementById('streak'), bestEl=document.getElementById('best');
+  var modeBtn=document.getElementById('mode'), subEl=document.getElementById('sub');
+
+  function reshuffle(){ order=SLOTS.map(function(c,i){return i;});
+    for(var i=order.length-1;i>0;i--){ var j=(i*5+streak*3+best+1)%(i+1); var t=order[i];order[i]=order[j];order[j]=t;} idx=0; }
+  function setMsg(t,k){ msgEl.textContent=t||' '; msgEl.className='msg'+(k?' '+k:''); }
+  function flash(b,c){ if(!b)return; b.classList.add(c); setTimeout(function(){b.classList.remove(c);},220); }
+
+  function next(){
+    if(idx>=order.length) reshuffle();
+    cur=SLOTS[order[idx]]; idx++;
+    facesEl.innerHTML = '<i style="background:'+COL[cur[0]]+'"></i><i style="background:'+COL[cur[1]]+'"></i>';
+    // build three options: one correct, two wrong; correct position varies by index
+    var correct = cur.slice();
+    var opts = [ correct, wrong(cur, idx), wrong(cur, idx+1) ];
+    // de-dupe second wrong if it collides with first wrong
+    if(opts[2][0]===opts[1][0] && opts[2][1]===opts[1][1]) opts[2]=wrong(cur, idx+2);
+    var pos = (order[idx-1]+streak) % 3;
+    var t=opts[0]; opts[0]=opts[pos]; opts[pos]=t;
+    padEl.innerHTML = opts.map(function(o){
+      var ok = (o[0]===correct[0]&&o[1]===correct[1]) ? '1':'0';
+      return '<button data-ok="'+ok+'">'+pairCell(o)+'</button>';
+    }).join('');
+    subEl.textContent = blind
+      ? 'Just the colours. Pick the pair that wears exactly those two.'
+      : 'Pick the pair = white + the slot’s two colours (corner), and just those two (edge). It’s '+NAME[cur[0]]+' + '+NAME[cur[1]]+'.';
+  }
+
+  padEl.addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b||locked||!cur) return;
+    if(b.getAttribute('data-ok')==='1'){
+      flash(b,'flash-good'); streak++; if(streak>best)best=streak;
+      streakEl.textContent=streak; bestEl.textContent=best;
+      setMsg(streak>=5?'Five in a row — the foundation is solid. 🎉':'Right pair. '+streak+' in a row.','good');
+      locked=true; setTimeout(function(){locked=false; next(); if(streak<5) setMsg('','');},700);
+    } else {
+      flash(b,'flash-bad'); streak=0; streakEl.textContent=0;
+      setMsg('Not that one — the pair wears the slot’s exact two colours. Back to zero.','bad');
+      locked=true; setTimeout(function(){locked=false;},750);
+    }
+  });
+  modeBtn.addEventListener('click', function(){
+    blind=!blind; modeBtn.textContent=blind?'Blind':'Guided'; modeBtn.classList.toggle('on',!blind);
+    streak=0; streakEl.textContent=0; setMsg('',''); reshuffle(); next();
+  });
+  reshuffle(); next();
+})();
+</script>
+</body>
+</html>

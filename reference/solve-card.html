@@ -96,7 +96,7 @@
 <header>
   <div class="kicker">Rubik's Cube · Reference</div>
   <h1>Solve Card</h1>
-  <p class="standfirst">The full solve in order, one stage per box. Complete — scramble to solved, all seven stages.</p>
+  <p class="standfirst">The full solve in order, one stage per box. The intermediate solve — read-the-case first layer, then 4-look last layer (orient, then permute).</p>
 </header>
 
 <div class="stage">
@@ -111,16 +111,20 @@
 </div>
 
 <div class="stage">
-  <h2><span class="num">2.</span> White corners — the trigger</h2>
-  <p class="goal">Goal: first layer complete. Grip: white down, yellow up — the solving grip from here on.</p>
-  <div class="alg">R U R' U'</div>
-  <ol>
-    <li><strong>Find</strong> a white corner in the top layer.</li>
-    <li><strong>Park</strong> it (<span class="moves">U</span> moves) directly above its home slot — its two non-white colours match the two centers below.</li>
-    <li><strong>Hold</strong> it at top-front-right, home slot beneath it.</li>
-    <li><strong>Trigger</strong> until it drops in white-side-down: 1, 3, or 5 repeats. Check after each repeat; don't rotate the cube between repeats.</li>
-  </ol>
-  <div class="rescue"><strong>Rescue</strong> — corner stuck in the bottom layer (wrong slot or twisted): hold that slot at front-right, one trigger pops it into the top layer, then solve normally.</div>
+  <h2><span class="num">2.</span> White corners — read &amp; insert</h2>
+  <p class="goal">Goal: first layer complete. Grip: white down, yellow up — the solving grip from here on. Park each corner above its empty slot, then read where its white sticker faces and fire one insert.</p>
+  <table>
+    <tr><th>White sticker faces…</th><th>Insert</th></tr>
+    <tr><td><strong>Right</strong> face</td><td><span class="alg">R U R'</span></td></tr>
+    <tr><td><strong>Front</strong> face (mirror)</td><td><span class="alg">F' U' F</span></td></tr>
+    <tr><td><strong>Up</strong> (white on top)</td><td><span class="alg">R U2 R' <span class="chunk2">U' R U R'</span></span></td></tr>
+  </table>
+  <ul>
+    <li><strong>Park first:</strong> <span class="moves">U</span> moves until the corner sits directly above its home slot (its two side colours match the two centers below), held at top-front-right.</li>
+    <li>White-on-top is the long one — its setup <span class="moves">R U2 R'</span> just kicks white onto a side, then it's the basic insert. (Mirror: <span class="moves">F' U2 F U F' U' F</span>.)</li>
+    <li>Read the case and fire <em>once</em> — don't grind the same move 1/3/5 times.</li>
+  </ul>
+  <div class="rescue"><strong>Rescue</strong> — corner stuck in the bottom layer (wrong slot or twisted): hold that slot at front-right, one <span class="moves">R U R'</span> pops it into the top layer, then read and insert normally.</div>
   <p class="check">Done when: solid white bottom <em>and</em> a solid bottom row ring on all four sides. The ring is the real test, not the white face.</p>
 </div>
 
@@ -166,50 +170,51 @@
 </div>
 
 <div class="stage">
-  <h2><span class="num">5.</span> Align the cross — the edge swap</h2>
-  <p class="goal">Goal: each cross edge sitting above its matching center. Only R and U turns — no F to get wrong.</p>
-  <div class="alg">R U R' U <span class="chunk2">R U2 R'</span> U</div>
-  <p style="font-size:15px; margin:4px 0 10px;">Swaps the <strong>front and left</strong> cross edges; back and right stay put. Shuffles unsolved corners — that's free.</p>
-  <ol>
-    <li><strong>Spin the top</strong> (<span class="moves">U</span> clicks) to the position with the most matches — always 2 or 4, never 1 or 3.</li>
-    <li><strong>Four match</strong> → done.</li>
-    <li><strong>Two adjacent match</strong> → rotate the cube so the matched pair are at <strong>back and right</strong>, run the algorithm once.</li>
-    <li><strong>Two opposite match</strong> → run it once from anywhere to break into the adjacent case, then set up and run again.</li>
-    <li>Finish with a top spin to line everything up.</li>
-  </ol>
-  <p class="check">Done when: four T-shapes — two solid rows plus matching cross edge on every side. Only the four yellow corners remain.</p>
+  <h2><span class="num">5.</span> Yellow corners — the Sune (OLL)</h2>
+  <p class="goal">Goal: the whole top face yellow. Don't care where the side colours sit yet — just get every corner showing yellow up. Same fixed grip; R and U only.</p>
+  <div class="alg">R U R' U <span class="chunk2">R U2 R'</span></div>
+  <p style="font-size:15px; margin:4px 0 10px;">Count how many corners already show <strong>yellow on top</strong> — always <strong>0, 1, or 2</strong> — then aim and fire. Re-count and re-aim between <em>every</em> go.</p>
+  <table>
+    <tr><th>Corners yellow-up</th><th>Hold so that…</th></tr>
+    <tr><td><strong>1</strong></td><td>that corner sits at <strong>top-front-left</strong>, then Sune.</td></tr>
+    <tr><td><strong>0 or 2</strong></td><td>the top-front-left corner has its <strong>yellow facing left</strong>, then Sune.</td></tr>
+  </table>
+  <ul>
+    <li>The loop: count → hold → Sune → <strong>re-count, re-hold</strong> → fire again. Worst case three Sunes.</li>
+    <li>A half-yellow top mid-stage is normal. The only real mistake is firing again <em>without</em> re-aiming.</li>
+  </ul>
+  <p class="check">Done when: a solid yellow top face. The ring below is still scrambled — the last two stages slide it home.</p>
 </div>
 
 <div class="stage">
-  <h2><span class="num">6.</span> Position the corners — the merry-go-round</h2>
-  <p class="goal">Goal: every yellow corner in its home slot, twist irrelevant. A corner is "correct" if its three colours match the three faces it touches — any way up.</p>
-  <div class="alg">U R U' L' <span class="chunk2">U R' U' L</span></div>
-  <p style="font-size:15px; margin:4px 0 10px;">Cycles three corners; the <strong>top-front-right</strong> corner stays put. Right hand, left hand, alternating top–side.</p>
-  <ol>
-    <li><strong>Audit</strong> all four corners by colour-set. Count correct: always 0, 1, or 4 — never 2 or 3.</li>
-    <li><strong>Four</strong> → done. <strong>One</strong> → rotate the whole cube (not U!) so it's at top-front-right; run the algorithm; if needed run it once more, same grip.</li>
-    <li><strong>Zero</strong> → run once from any grip to create a correct corner, then handle as the one-correct case.</li>
-  </ol>
-  <p class="check">Done when: all four colour-set audits pass. May still look messy — twisted corners are next stage's job. Trust the audit, not the aesthetics.</p>
+  <h2><span class="num">6.</span> Place the corners — headlights (PLL)</h2>
+  <p class="goal">Goal: all four top corners in their home corner, top still yellow. Recognise by <strong>headlights</strong> — two top corners on a face showing the same colour as each other.</p>
+  <div class="alg">R' F R' B2 <span class="chunk2">R F' R' B2 R2</span></div>
+  <p style="font-size:15px; margin:4px 0 10px;">A 3-cycle — places three corners; the front-left one is the anchor and stays. Walk the four sides; headlight faces are always <strong>0, 1, or 4</strong>, never 2 or 3.</p>
+  <table>
+    <tr><th>Headlight faces</th><th>Do</th></tr>
+    <tr><td><strong>4</strong></td><td>corners already done — skip to stage 7.</td></tr>
+    <tr><td><strong>1</strong></td><td>those headlights to the <strong>back</strong>, run once.</td></tr>
+    <tr><td><strong>0</strong></td><td>run once from anywhere → a headlight pair appears → re-aim to the back, run again.</td></tr>
+  </table>
+  <p class="check">Done when: every top corner's two side stickers match their faces — all four corners home. Fire at most twice.</p>
 </div>
 
 <div class="stage">
-  <h2><span class="num">7.</span> Orient the corners — the final twist</h2>
-  <p class="goal">Goal: a solved cube. Twist each corner in place until its yellow faces up. New letter: <span class="moves">D</span> = bottom layer, front row slides left (<span class="moves">D'</span> slides it right).</p>
-  <div class="alg">R' D' <span class="chunk2">R D</span></div>
-  <p style="font-size:15px; margin:4px 0 10px;">Twists whatever sits at <strong>top-front-right</strong>. Repeat in pairs — each corner takes 2 or 4 repetitions.</p>
-  <ol>
-    <li><strong>Hold</strong> a twisted corner at top-front-right.</li>
-    <li><strong>Run the four moves twice.</strong> Yellow up? Done. No? Twice more — always pairs, never odd.</li>
-    <li><strong>Turn U only</strong> (never the whole cube, never the bottom layers) to bring the next twisted corner to top-front-right. Repeat.</li>
-    <li><strong>Finish</strong> with U turns to line up the top layer.</li>
-  </ol>
-  <div class="rescue"><strong>Keep going</strong> — mid-step the bottom layers look destroyed. That's the algorithm borrowing pieces; it repays everything as the last corner finishes. The only real mistakes are stopping early, rotating the cube, or moving the bottom layers between corners.</div>
+  <h2><span class="num">7.</span> Cycle the edges — the finish (PLL)</h2>
+  <p class="goal">Goal: a solved cube. Only the four top edges remain. The anchor is a <strong>solved edge</strong> — a top edge whose front colour already matches the center below it.</p>
+  <div class="alg">R U' R U R U <span class="chunk2">R U' R' U' R2</span></div>
+  <p style="font-size:15px; margin:4px 0 10px;">A 3-cycle of edges, R and U only; the back edge is the anchor and stays put.</p>
+  <table>
+    <tr><th>You see</th><th>Do</th></tr>
+    <tr><td><strong>One solved edge</strong></td><td>hold it at the <strong>back</strong>, run once. Didn't solve? The cycle ran the other way — run once more.</td></tr>
+    <tr><td><strong>No solved edge</strong></td><td>run once from any angle → a solved edge appears → re-aim to the back, run again.</td></tr>
+  </table>
   <p class="check">Done when: six flat faces. The cube is solved.</p>
 </div>
 
 <footer>
-  Rubik's Cube reference · See also the <a href="glossary.html">Glossary</a> · Sources: <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix</a> · <a href="https://jperm.net/3x3">J Perm</a> · Questions? Ask your teaching agent.
+  Rubik's Cube reference · The intermediate solve (4-look last layer) · See also the <a href="glossary.html">Glossary</a> · Sources: <a href="https://jperm.net/3x3">J Perm</a> · <a href="https://tactilecuber.com/3x3/cfop/2-look-oll/">TactileCuber (OLL)</a> · <a href="https://www.jperm.net/algs/2look/pll">J Perm (PLL)</a> · Questions? Ask your teaching agent.
 </footer>
 
 </div>

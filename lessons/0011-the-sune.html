@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11 — The Sune: One Algorithm for the Whole Yellow Top</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+    --grey: #d8d4cd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 20px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .new { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 28px 0; color: #faf9f7; }
+  .new .lbl { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 6px; }
+  .new .seq { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 26px; font-weight: 700; letter-spacing: 0.06em; }
+  .new .gloss { font-size: 15px; color: #cfcac3; font-style: italic; margin: 8px 0 0; }
+
+  table.holds { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 17px; }
+  table.holds th, table.holds td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.holds th { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  table.holds td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* trainer */
+  .trainer { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .trainer h4 { margin: 0 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 18px; font-style: italic; }
+  .slots { display: flex; gap: 8px; justify-content: center; margin: 0 0 18px; flex-wrap: wrap; }
+  .slot { width: 52px; height: 56px; border-radius: 8px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 18px; font-weight: 700; color: var(--muted); background: var(--bg); transition: all .12s; }
+  .slot.ghost { color: #cfcac3; }
+  .slot.cur { border-style: solid; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(200,64,26,0.12); }
+  .slot.done { border-style: solid; border-color: var(--good); background: var(--good-bg); color: var(--good); }
+  .slot.err { border-style: solid; border-color: var(--bad); background: var(--bad-bg); color: var(--bad); animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
+  .pad button { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 22px; font-weight: 700; padding: 16px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s; }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls { display: flex; gap: 8px; }
+  .ctrls button { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  .ctrls button:hover { border-color: var(--ink); }
+  .ctrls button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .msg { text-align: center; font-family: -apple-system, sans-serif; font-weight: 600; min-height: 24px; margin: 16px 0 0; font-size: 16px; }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li { counter-increment: step; position: relative; padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px; }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before { content: counter(step); position: absolute; left: -20px; top: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px; }
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .practice h4 { margin: 0 0 10px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+  .note { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 18px 22px; margin: 28px 0; font-size: 17px; }
+  .note strong:first-child { color: #1c5a9e; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 11 · Optimising — the real upgrade</div>
+  <h1>The Sune</h1>
+  <p class="standfirst">You've decided to actually get better, new algorithms and all. So here's the first real upgrade: retire the <span class="moves">R' D' R D</span> grind and paint the whole yellow top with one algorithm.</p>
+</header>
+
+<p>This is a turning point, so let's be clear about what's changing. Your beginner last layer has four stages — make the cross, align it, position the corners, then twist them upright with repeated <span class="moves">R' D' R D</span>. That last stage is the slowest, fiddliest thing you do: a long grind that destroys the bottom and slowly repays it, one corner at a time.</p>
+
+<p>The intermediate world does the last layer in a different, faster shape called <strong>4-look last layer</strong>: first <strong>orient</strong> everything (get the whole top yellow), <em>then</em> <strong>permute</strong> everything (slide the pieces home). The first half — getting the top fully yellow — is called <strong>OLL</strong> (Orientation of the Last Layer). <a href="https://tactilecuber.com/3x3/cfop/2-look-oll/">[TactileCuber]</a></p>
+
+<div class="insight">
+  <strong>This lesson teaches the corner half of OLL — with a single algorithm.</strong> You already make the yellow cross (<span class="moves">F R U R' U' F'</span>, lesson 4). Add one more algorithm — the <strong>Sune</strong> — applied one to three times, and the entire top face goes yellow. That one algorithm replaces your whole stage-7 grind.
+</div>
+
+<h2><span class="num">1.</span> Meet the Sune</h2>
+
+<p>The Sune is the most famous algorithm in cubing, and it's barely a stranger — it opens with the same <span class="moves">R U R'</span> motion buried inside the trigger you've used since lesson 2.</p>
+
+<div class="new">
+  <div class="lbl">New algorithm — the Sune</div>
+  <div class="seq">R U R' U R U2 R'</div>
+  <div class="gloss">"Right-up-right… right-up-up-right." Seven moves, only the R and U faces — no F, nothing to get backwards.</div>
+</div>
+
+<p>One Sune lifts three corners, spins them, and sets them back. Run it from the right starting position and, after one to three goes, every corner shows yellow on top. Notice the relief: <strong>no <span class="moves">F</span>, no <span class="moves">D</span>, no whole-cube rotations</strong> — the two faces you trust most, and nothing else. <a href="https://www.speedsolving.com/wiki/index.php/Corner_Orientation">[Speedsolving Wiki]</a></p>
+
+<h2><span class="num">2.</span> Where to hold it — the whole trick</h2>
+
+<p>The Sune only works if you aim it correctly first. Before each go, glance at the top and count how many corners <strong>already show yellow on top</strong>. It's always <strong>0, 1, or 2</strong> (never 3; four means you're done). That count tells you exactly how to hold the cube: <a href="https://www.speedcube.us/blogs/speedcubing-solutions/how-to-solve-the-3x3-last-layer-alternate-method-intermediate">[speedcube.us]</a></p>
+
+<table class="holds">
+  <thead><tr><th>You see</th><th>Hold it so that…</th></tr></thead>
+  <tbody>
+    <tr><td>1 yellow on top</td><td>…that single already-correct corner sits at <strong>top-front-left</strong>. Then Sune.</td></tr>
+    <tr><td>0 or 2 on top</td><td>…the top-front-left corner has its <strong>yellow sticker facing left</strong>. Then Sune.</td></tr>
+  </tbody>
+</table>
+
+<div class="insight">
+  <strong>The loop:</strong> count → hold by the rule → Sune → <em>re-count and re-hold</em> → Sune again if needed. Re-aiming between goes is the part beginners skip — don't. Worst case is three Sunes; most cases are one or two. When the top is solid yellow, you're done.
+</div>
+
+<p>And there's a free self-check: if the top <em>isn't</em> fully yellow after a Sune, that's fine and expected — just re-count, re-hold, and fire again. The only real mistake is running a second Sune <em>without</em> re-aiming. Trust the rule, not the look of the half-finished top.</p>
+
+<h2><span class="num">3.</span> Drill the Sune into your hands</h2>
+
+<p>Same trainer you know. Tap the seven moves in order — green locks them in, a wrong tap resets the run. Start <strong>Guided</strong>, then go <strong>Blind</strong> and rebuild it from memory. Goal: <strong>five blind runs in a row</strong>, saying each move aloud so your hand learns the rhythm.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Sune Recall Trainer</h4>
+  <p class="sub" id="goal">Guided mode — tap the sequence in order.</p>
+  <div class="slots" id="slots"></div>
+  <div class="pad" id="pad">
+    <button data-m="R">R</button>
+    <button data-m="U">U</button>
+    <button data-m="R'">R'</button>
+    <button data-m="U2">U2</button>
+    <button data-m="U'">U'</button>
+    <button data-m="L">L</button>
+  </div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls">
+      <button id="mode" class="on">Guided</button>
+      <button id="reset">Reset run</button>
+    </div>
+  </div>
+</div>
+
+<p>(The <span class="moves">L</span> and <span class="moves">U'</span> buttons are decoys — the Sune never uses them. Part of the drill is <em>not</em> reaching for them.)</p>
+
+<h2><span class="num">4.</span> Take it to the cube</h2>
+
+<ul class="steps">
+  <li><strong>Solve up to the yellow cross.</strong> Scramble, then run your normal solve only as far as stage 4 — a yellow cross on top, corners still random. Stop there.</li>
+  <li><strong>Count, hold, Sune.</strong> Count the yellow-on-top corners (0/1/2), hold by the rule above, and run the Sune. Re-count, re-hold, repeat. Watch the top fill in until it's a solid yellow face.</li>
+  <li><strong>Just drill the orientation.</strong> Don't worry that the sides are scrambled — getting the full yellow top is the win for today. Reach it ten times from ten different crosses, and the count-hold-Sune loop becomes automatic.</li>
+  <li><strong>Feel the upgrade.</strong> Compare it to the old <span class="moves">R' D' R D</span> stage. Fewer moves, one familiar algorithm, no cube-flipping. That's what "optimising" actually buys you.</li>
+</ul>
+
+<div class="note">
+  <strong>Keep your old method for now.</strong> A solid yellow top isn't a solved cube — the last-layer pieces still need sliding home, and that's the <em>permutation</em> half (PLL), coming in lesson 12. Until then, build the Sune in parallel: keep solving full cubes the beginner way, but practise OLL on the side. Once you've got both halves, we swap the whole last layer over and you'll have a genuinely faster solve.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to five blind runs, then on the cube reach a solid yellow top from ten different yellow crosses using count-hold-Sune.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions:</strong> after each normal solve, do a few extra OLL-only reps — cross, then Sune to full yellow. Say the count and the hold aloud ("two up, yellow-left, Sune").</p>
+  <p style="margin-bottom:0"><strong>When the yellow top comes reliably:</strong> tell me, and we'll add the permutation half — that's the lesson that makes the whole new last layer click into a complete, faster solve.</p>
+</div>
+
+<footer>
+  Lesson 11 of the Rubik's Cube curriculum · The new mission extension (intermediate last layer) · 2-look OLL &amp; Sune: <a href="https://tactilecuber.com/3x3/cfop/2-look-oll/">TactileCuber</a> · <a href="https://www.jperm.net/algs/2lookoll">J Perm — 2-Look OLL</a> · Corner-orientation theory: <a href="https://www.speedsolving.com/wiki/index.php/Corner_Orientation">Speedsolving Wiki</a> · Repeat-Sune holding rule: <a href="https://www.speedcube.us/blogs/speedcubing-solutions/how-to-solve-the-3x3-last-layer-alternate-method-intermediate">speedcube.us</a> · See also the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Sune misbehaving? Ask me, your teacher — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var TARGET = ['R','U',"R'",'U','R','U2',"R'"];
+  var pos = 0, streak = 0, best = 0, blind = false, locked = false;
+
+  var slotsEl = document.getElementById('slots');
+  var msgEl   = document.getElementById('msg');
+  var streakEl= document.getElementById('streak');
+  var bestEl  = document.getElementById('best');
+  var goalEl  = document.getElementById('goal');
+  var modeBtn = document.getElementById('mode');
+  var resetBtn= document.getElementById('reset');
+  var pad     = document.getElementById('pad');
+
+  var slotEls = TARGET.map(function () {
+    var d = document.createElement('div'); d.className = 'slot'; slotsEl.appendChild(d); return d;
+  });
+
+  function render() {
+    TARGET.forEach(function (m, i) {
+      var el = slotEls[i];
+      el.className = 'slot';
+      if (i < pos) { el.className = 'slot done'; el.textContent = m; }
+      else if (i === pos) { el.className = 'slot cur'; el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+      else { el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+    });
+  }
+  function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+  function flash(btn, cls) { if (!btn) return; btn.classList.add(cls); setTimeout(function () { btn.classList.remove(cls); }, 220); }
+
+  function complete() {
+    locked = true; streak += 1; if (streak > best) best = streak;
+    streakEl.textContent = streak; bestEl.textContent = best;
+    if (streak >= 5) setMsg('Five in a row — take it to the cube. 🎉', 'good');
+    else setMsg('Clean Sune! ' + streak + ' in a row.', 'good');
+    setTimeout(function () { pos = 0; locked = false; render(); }, 700);
+  }
+  function tap(move, btn) {
+    if (locked) return;
+    if (move === TARGET[pos]) {
+      flash(btn, 'flash-good'); pos += 1; render();
+      if (pos === TARGET.length) complete(); else setMsg('', '');
+    } else {
+      flash(btn, 'flash-bad');
+      if (slotEls[pos]) { slotEls[pos].className = 'slot err'; slotEls[pos].textContent = move; }
+      streak = 0; streakEl.textContent = 0;
+      setMsg('Not there — back to the start. Expected ' + (blind ? 'the next move.' : TARGET[pos] + '.'), 'bad');
+      locked = true; setTimeout(function () { pos = 0; locked = false; render(); }, 650);
+    }
+  }
+
+  pad.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) tap(b.getAttribute('data-m'), b); });
+  modeBtn.addEventListener('click', function () {
+    blind = !blind;
+    modeBtn.textContent = blind ? 'Blind' : 'Guided';
+    modeBtn.classList.toggle('on', !blind);
+    goalEl.textContent = blind ? 'Blind mode — rebuild it from memory. Aim for five in a row.' : 'Guided mode — tap the sequence in order.';
+    pos = 0; streak = 0; streakEl.textContent = 0; setMsg('', ''); render();
+  });
+  resetBtn.addEventListener('click', function () { pos = 0; locked = false; setMsg('', ''); render(); });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 13 — Hooks for the Long Algorithms: Chunk the Two PLLs</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+    --grey: #d8d4cd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 20px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+
+  /* chunk strip — the heart of each hook */
+  .strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 26px 0 10px; }
+  .chunk { background: #1a1a1a; color: #faf9f7; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 56px; display: flex; flex-direction: column; justify-content: center; }
+  .chunk .seq { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 19px; font-weight: 700; letter-spacing: 0.04em; }
+  .chunk .nm { font-family: -apple-system, sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--yellow); margin-top: 5px; }
+  .chunk.wall { background: var(--accent); }
+  .chunk.wall .nm { color: #ffe; }
+  .chunk.tail { background: #3a3a3a; }
+  .chunk.tail .nm { color: #cfcac3; }
+  .strip .plus { align-self: center; color: var(--muted); font-weight: 700; font-size: 22px; }
+  .rhythm { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); font-style: italic; margin: 4px 0 0; text-align: center; }
+
+  .twinnote { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 16px 20px; margin: 22px 0; font-size: 16.5px; }
+  .twinnote strong:first-child { color: #1c5a9e; }
+  .note { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 18px 22px; margin: 28px 0; font-size: 17px; }
+  .note strong:first-child { color: #1c5a9e; }
+
+  /* trainer (chunk version) */
+  .trainer { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .trainer h4 { margin: 0 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 18px; font-style: italic; }
+  .slots { display: flex; gap: 8px; justify-content: center; margin: 0 0 18px; flex-wrap: wrap; }
+  .slot { min-width: 72px; height: 52px; padding: 0 12px; border-radius: 8px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 15px; font-weight: 700; color: var(--muted); background: var(--bg); transition: all .12s; }
+  .slot.ghost { color: #cfcac3; }
+  .slot.cur { border-style: solid; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(200,64,26,0.12); }
+  .slot.done { border-style: solid; border-color: var(--good); background: var(--good-bg); color: var(--good); }
+  .slot.err { border-style: solid; border-color: var(--bad); background: var(--bad-bg); color: var(--bad); animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .pad { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 460px; margin: 0 auto; }
+  .pad button { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 17px; font-weight: 700; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s; }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls { display: flex; gap: 8px; }
+  .ctrls button { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  .ctrls button:hover { border-color: var(--ink); }
+  .ctrls button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .msg { text-align: center; font-family: -apple-system, sans-serif; font-weight: 600; min-height: 24px; margin: 16px 0 0; font-size: 16px; }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .practice h4 { margin: 0 0 10px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 13 · Optimising — making the long algorithms stick</div>
+  <h1>Hooks for the Long Algorithms</h1>
+  <p class="standfirst">You know both PLL algorithms — but they're the longest you've met, and they're still in your head, not your hands. This lesson gives each one a hook, so it comes out in one piece.</p>
+</header>
+
+<p>The two <a href="0012-permute-the-last-layer.html">PLL</a> algorithms are nine and eleven moves — far longer than anything before them. Trying to recall a long algorithm move-by-move is like reciting a phone number you never grouped: the middle falls out. The fix is the same trick your phone uses, and the same one you've <em>already</em> used on the cube without naming it.</p>
+
+<div class="insight">
+  <strong>Don't memorise moves — memorise chunks.</strong> Your working memory holds only a handful of items at once, so long strings overflow it. Group the moves into a few familiar bundles and you're holding <em>three or four things</em>, not eleven. <a href="https://en.wikipedia.org/wiki/Chunking_(psychology)">[Chunking — the psychology]</a> You did this on day one: <span class="moves">R U R' U'</span> isn't four moves to you, it's <em>one</em> thing — the <a href="../reference/glossary.html">trigger</a>. The <a href="0011-the-sune.html">Sune</a> is just the trigger plus a tail. We'll do the same to both PLLs.</p>
+</div>
+
+<p>A <strong>chunk</strong> is a short group of moves your fingers run as a single unit. The skill in this lesson isn't new moves — it's seeing each long algorithm as a <em>handful of chunks with a rhythm</em>. Learn that once and every future algorithm gets shorter.</p>
+
+<h2><span class="num">1.</span> The corner algorithm — "Two Walls"</h2>
+
+<p>Here is the A-perm, written as your fingers should feel it. The two <span class="moves">B2</span> turns are loud, heavy <strong>walls</strong> — turning the whole back face halfway round. They split the algorithm into three rooms:</p>
+
+<div class="strip">
+  <div class="chunk"><span class="seq">R' F R'</span><span class="nm">knock</span></div>
+  <div class="chunk wall"><span class="seq">B2</span><span class="nm">wall</span></div>
+  <div class="chunk"><span class="seq">R F' R'</span><span class="nm">twin knock</span></div>
+  <div class="chunk wall"><span class="seq">B2</span><span class="nm">wall</span></div>
+  <div class="chunk tail"><span class="seq">R2</span><span class="nm">slam</span></div>
+</div>
+<p class="rhythm">Rhythm: <strong>knock-knock-knock — WALL — knock-knock-knock — WALL — SLAM.</strong></p>
+
+<div class="twinnote">
+  <strong>The two knocks are twins.</strong> Room 1 is <span class="moves">R' F R'</span>; room 3 is <span class="moves">R F' R'</span>. To get the twin: <em>flip the first two moves, keep the tail <span class="moves">R'</span></em>. So you don't store two rooms — you store one, plus the rule "flip the front pair." Then a single <span class="moves">R2</span> slams the door. Five things to hold becomes really three: <strong>knock, wall, slam.</strong>
+</div>
+
+<p>Drill the <em>order of the chunks</em> below — not the individual moves (you have those). Tap the bundles in sequence. Start <strong>Guided</strong>, then switch to <strong>Blind</strong> and rebuild it from the hook. Goal: <strong>five blind runs in a row.</strong></p>
+
+<div class="trainer" data-seq="R' F R'|B2|R F' R'|B2|R2" data-name="A-perm chunks">
+  <h4>Corner Hook — Chunk Trainer</h4>
+  <p class="sub goal">Guided mode — tap the chunks in order.</p>
+  <div class="slots"></div>
+  <div class="pad">
+    <button data-m="R' F R'">R' F R'</button>
+    <button data-m="R F' R'">R F' R'</button>
+    <button data-m="B2">B2</button>
+    <button data-m="R2">R2</button>
+  </div>
+  <div class="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b class="streak">0</b> &nbsp;·&nbsp; Best <b class="best">0</b></div>
+    <div class="ctrls">
+      <button class="mode on">Guided</button>
+      <button class="reset">Reset run</button>
+    </div>
+  </div>
+</div>
+
+<h2><span class="num">2.</span> The edge algorithm — "Two See-Saw Bars"</h2>
+
+<p>The U-perm has a gift built in: it is <strong>nothing but <span class="moves">R</span> and <span class="moves">U</span></strong> — the two friendliest turns on the cube, the same fingers as the trigger. Read it as two matching bars of <span class="moves">R U R U</span>, then a short landing:</p>
+
+<div class="strip">
+  <div class="chunk"><span class="seq">R U' R U</span><span class="nm">bar one</span></div>
+  <div class="chunk"><span class="seq">R U R U'</span><span class="nm">bar two</span></div>
+  <div class="chunk tail"><span class="seq">R' U' R2</span><span class="nm">landing</span></div>
+</div>
+<p class="rhythm">Rhythm: <strong>R-U-R-U — R-U-R-U — and down.</strong> Same hand the whole way.</p>
+
+<div class="twinnote">
+  <strong>The bars see-saw.</strong> Both bars are the identical <span class="moves">R U R U</span> skeleton — only the <em>U directions flip</em> between them. Bar one dips first (<span class="moves">U'</span> then <span class="moves">U</span>); bar two rises first (<span class="moves">U</span> then <span class="moves">U'</span>). Down-up, then up-down — a see-saw. Then the <strong>landing</strong> <span class="moves">R' U' R2</span> is the only place a prime and the double turn appear. Three chunks: <strong>bar, bar, land.</strong>
+</div>
+
+<p>Same drill — tap the three chunks in order, Guided then Blind, five in a row.</p>
+
+<div class="trainer" data-seq="R U' R U|R U R U'|R' U' R2" data-name="U-perm chunks">
+  <h4>Edge Hook — Chunk Trainer</h4>
+  <p class="sub goal">Guided mode — tap the chunks in order.</p>
+  <div class="slots"></div>
+  <div class="pad">
+    <button data-m="R U' R U">R U' R U</button>
+    <button data-m="R U R U'">R U R U'</button>
+    <button data-m="R' U' R2">R' U' R2</button>
+    <button data-m="R U R U">R U R U</button>
+  </div>
+  <div class="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b class="streak">0</b> &nbsp;·&nbsp; Best <b class="best">0</b></div>
+    <div class="ctrls">
+      <button class="mode on">Guided</button>
+      <button class="reset">Reset run</button>
+    </div>
+  </div>
+</div>
+
+<h2><span class="num">3.</span> The shape they share</h2>
+
+<p>Notice both hooks land on the <em>same shape</em> — the one you already know from the Sune:</p>
+
+<div class="insight">
+  <strong>Twin + tail.</strong> Each long algorithm is <em>two near-identical chunks plus a short closer.</em> Corners: knock, twin knock, slam. Edges: bar, see-saw bar, landing. When a future algorithm looks frightening, hunt for its twin first — the repeated piece is usually most of it, and what's left is a short tail.</p>
+</div>
+
+<p>That's the transferable win. You're not just learning two algorithms today; you're learning <strong>how to swallow a long algorithm whole</strong> — so the next one costs you three chunks, not eleven moves.</p>
+
+<div class="note">
+  <strong>How the hook hands off to the cube.</strong> On the cube you still recognise the case the normal way — <a href="../reference/glossary.html">headlights</a> to the back, then the corner alg; solved edge to the back, then the edge alg. The hook is only for <em>producing the moves once you've decided to fire</em>. Say the rhythm under your breath as you turn: "knock, wall, knock, wall, slam." Spoken rhythm survives pressure better than a silent list.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> both chunk trainers to five blind runs. Then pick up the cube and run each PLL from a full-yellow top, <em>saying the rhythm aloud</em> as your hands go. If a chunk smears, slow down and name it before you turn.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions (spacing &amp; interleaving):</strong> don't drill one alg ten times then the other — <em>alternate</em> them, and mix them into full <a href="0012-permute-the-last-layer.html">OLL → PLL</a> solves so recall happens cold, the way it will on a real scramble.</p>
+  <p style="margin-bottom:0"><strong>When both come out of your hands without a peek:</strong> tell me. That's the signal the intermediate last layer is truly banked — we'll retire beginner stages 5–7 on your <a href="../reference/solve-card.html">solve card</a> for good.</p>
+</div>
+
+<footer>
+  Lesson 13 of the Rubik's Cube curriculum · Making the long algorithms stick · Technique: <a href="https://en.wikipedia.org/wiki/Chunking_(psychology)">chunking</a> · Recognition &amp; the algorithms themselves: <a href="0012-permute-the-last-layer.html">Lesson 12 — Permute the Last Layer</a> · See also the <a href="../reference/glossary.html">Glossary</a> &amp; <a href="../reference/solve-card.html">Solve Card</a> · A chunk won't sit right? Ask me, your teacher — that's what I'm here for — or compare notes at <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+(function () {
+  function initTrainer(root) {
+    var TARGET = root.getAttribute('data-seq').split('|');
+    var pos = 0, streak = 0, best = 0, blind = false, locked = false;
+    var slotsEl = root.querySelector('.slots');
+    var msgEl   = root.querySelector('.msg');
+    var streakEl= root.querySelector('.streak');
+    var bestEl  = root.querySelector('.best');
+    var goalEl  = root.querySelector('.goal');
+    var modeBtn = root.querySelector('.mode');
+    var resetBtn= root.querySelector('.reset');
+    var pad     = root.querySelector('.pad');
+
+    var slotEls = TARGET.map(function () {
+      var d = document.createElement('div'); d.className = 'slot'; slotsEl.appendChild(d); return d;
+    });
+    function render() {
+      TARGET.forEach(function (m, i) {
+        var el = slotEls[i];
+        el.className = 'slot';
+        if (i < pos) { el.className = 'slot done'; el.textContent = m; }
+        else if (i === pos) { el.className = 'slot cur'; el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+        else { el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+      });
+    }
+    function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+    function flash(btn, cls) { if (!btn) return; btn.classList.add(cls); setTimeout(function () { btn.classList.remove(cls); }, 220); }
+    function complete() {
+      locked = true; streak += 1; if (streak > best) best = streak;
+      streakEl.textContent = streak; bestEl.textContent = best;
+      if (streak >= 5) setMsg('Five in a row — take it to the cube. 🎉', 'good');
+      else setMsg('Clean run! ' + streak + ' in a row.', 'good');
+      setTimeout(function () { pos = 0; locked = false; render(); }, 700);
+    }
+    function tap(move, btn) {
+      if (locked) return;
+      if (move === TARGET[pos]) {
+        flash(btn, 'flash-good'); pos += 1; render();
+        if (pos === TARGET.length) complete(); else setMsg('', '');
+      } else {
+        flash(btn, 'flash-bad');
+        if (slotEls[pos]) { slotEls[pos].className = 'slot err'; slotEls[pos].textContent = move; }
+        streak = 0; streakEl.textContent = 0;
+        setMsg('Not there — back to the start. Expected ' + (blind ? 'the next chunk.' : TARGET[pos] + '.'), 'bad');
+        locked = true; setTimeout(function () { pos = 0; locked = false; render(); }, 650);
+      }
+    }
+    pad.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) tap(b.getAttribute('data-m'), b); });
+    modeBtn.addEventListener('click', function () {
+      blind = !blind;
+      modeBtn.textContent = blind ? 'Blind' : 'Guided';
+      modeBtn.classList.toggle('on', !blind);
+      goalEl.textContent = blind ? 'Blind mode — rebuild it from the hook. Aim for five in a row.' : 'Guided mode — tap the chunks in order.';
+      pos = 0; streak = 0; streakEl.textContent = 0; setMsg('', ''); render();
+    });
+    resetBtn.addEventListener('click', function () { pos = 0; locked = false; setMsg('', ''); render(); });
+    render();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.trainer'), initTrainer);
+})();
+</script>
+</body>
+</html>

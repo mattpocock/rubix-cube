@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18 — Fix a Wrong Slot: The Filled-but-Wrong Case</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<style>
+  /* lesson-specific only — shared course styles live in assets/lesson.css */
+  .legend { font-family: -apple-system, sans-serif; font-size: 14.5px; line-height: 1.5; margin: 18px auto 0; max-width: 460px; }
+  .legend .row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .legend .sw { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #13110f; flex: none; }
+
+  /* tells gallery */
+  .tells { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 28px 0; }
+  @media (max-width: 600px) { .tells { grid-template-columns: 1fr; } }
+  .tell { border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 16px 14px; text-align: center; }
+  .tell.ok { border-color: #bfe0c2; }
+  .tell h4 { margin: 8px 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .tell.ok h4 { color: var(--good); } .tell.bad h4 { color: var(--accent); }
+  .tell svg { width: 130px; height: auto; }
+  .tell p { font-size: 14px; margin: 6px 0 0; color: var(--muted); }
+
+  .pad { grid-template-columns: 1fr 1fr; }   /* two-button trainer */
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 18 · F2L — first two layers, part 4</div>
+  <h1>Fix a Wrong Slot</h1>
+  <p class="standfirst">A slot can look finished and still be wrong — an edge in backwards, a corner twisted, the wrong piece sitting there entirely. Here's how to spot it in a glance, and the one move that fixes all three.</p>
+</header>
+
+<p>You asked the sharp question: what do you do when the edge is in the <em>right slot but twisted the wrong way</em>? It's worth its own lesson, because it belongs to a whole family — the <strong>filled-but-wrong slot</strong>. The slot looks occupied, so it's easy to skate past it, but the colours don't line up, and that pair is not actually solved. The skill here is two halves: <strong>reading the tell</strong>, and knowing that the fix is something you already do.</p>
+
+<h2><span class="num">1.</span> A solved slot has clean colour runs</h2>
+
+<p>Hold the slot at the front-right and look at its two visible faces. When a pair is genuinely solved, the colours run <strong>cleanly down the column</strong> — the front face of the slot matches the green centre above it, the right face matches the red centre. Top-to-bottom, one colour each:</p>
+
+<div style="text-align:center;margin:28px 0">
+  <span data-cube="corner:0;fr:solved"></span>
+  <div class="legend">
+    <div class="row"><span class="sw" style="background:#3a9d52"></span> <strong>green</strong> — the front face; it should run unbroken down the front of the slot</div>
+    <div class="row"><span class="sw" style="background:#c0392b"></span> <strong>red</strong> — the right face; unbroken down the right of the slot</div>
+    <div class="row"><span class="sw" style="background:#f4f2ec"></span> <strong>white</strong> — belongs on the <em>bottom</em>; if you can see it on a side, something's twisted</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The one check.</strong> Solved = each side of the slot is a single clean colour, and no white on the sides. Any break in that pattern means the slot is <em>filled but wrong</em> — and needs fixing, not skipping.
+</div>
+
+<h2><span class="num">2.</span> The three tells</h2>
+
+<p>Three things can be wrong. You don't need to name which — but learning to see them stops you trusting a slot that only <em>looks</em> done:</p>
+
+<div class="tells">
+  <div class="tell ok">
+    <span data-cube="corner:0;fr:solved"></span>
+    <h4>Solved</h4>
+    <p>Green runs down the front, red down the right. Leave it.</p>
+  </div>
+  <div class="tell bad">
+    <span data-cube="corner:0;fr:flip"></span>
+    <h4>Edge flipped</h4>
+    <p>The edge's two colours are <strong>swapped</strong> — red interrupts the green run. Right slot, wrong way round.</p>
+  </div>
+  <div class="tell bad">
+    <span data-cube="corner:0;fr:twist"></span>
+    <h4>Corner twisted</h4>
+    <p><strong>White on a side</strong> instead of the bottom. The corner's in its slot but rolled the wrong way.</p>
+  </div>
+</div>
+
+<p>(The fourth case — a completely <strong>wrong piece</strong> jammed in there — reads the same way: colours that don't belong to this slot at all. Same fix.)</p>
+
+<h2><span class="num">3.</span> One fix for all of them</h2>
+
+<p>Here's the relief: you don't repair a wrong slot in place, and you don't need a new move to deal with each tell. You <strong>empty the slot and rebuild</strong> — and emptying it is the <a href="0017-bring-the-edge-up.html">evict</a> you already know:</p>
+
+<div class="new">
+  <div class="lbl">Clear any wrong slot, then rebuild</div>
+  <div class="seq">R U R'</div>
+  <div class="gloss">Hold the wrong slot at front-right, fire once: whatever's jammed in there — flipped edge, twisted corner, both, or the wrong piece — lifts up to the top layer. Now pair it properly (Lesson 16) and insert. The rebuild puts everything back the right way round.</div>
+</div>
+
+<div class="insight">
+  <strong>Why there's no "flip it in place" trick.</strong> An edge sitting the wrong way round can't be turned over without leaving its slot — the cube simply has no move that twists one piece and touches nothing else. So the honest fix is always the same: take it out, rebuild. <strong>Expect this:</strong> if a <em>correct</em> piece shared the slot, <span class="moves">R U R'</span> lifts it out too. That's not a step backwards — you can't free the wrong piece without briefly opening the slot, and you'll re-insert the whole pair cleanly in seconds.
+</div>
+
+<p class="verified">Checked on the cube simulator: a single <span class="moves">R U R'</span> clears the front-right slot — flipped edge, twisted corner, or random junk — and leaves your white cross fully intact every time. <a href="../assets/f2l_verify.py">[verification]</a></p>
+
+<h2><span class="num">4.</span> Drill the tell</h2>
+
+<p>A slot appears at the front-right. One glance: are the colours <strong>clean</strong> (leave it) or <strong>broken / white-on-side</strong> (clear with <span class="moves">R U R'</span>)? Guided explains; Blind makes you call it. Goal: <strong>five in a row</strong>.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Solved-or-Wrong Trainer</h4>
+  <p class="sub" id="sub">Read the slot's two faces. Clean, or broken?</p>
+  <div class="stage" id="stage"></div>
+  <div class="pad" id="pad">
+    <button data-a="ok">Clean → leave it</button>
+    <button data-a="fix">Wrong → R U R'</button>
+  </div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="mode" class="on">Guided</button></div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>This is the habit that makes F2L trustworthy.</strong> Before you call the first two layers done, glance at all four slots — clean runs, no white on the sides. One that's filled-but-wrong, you now fix on sight. When that check is automatic and all four slots build reliably, tell me — that's the green light to retire stages 2 and 3 on your <a href="../reference/solve-card.html">solve card</a> and fold F2L in for good. The last case still waiting is the same-colour-up "hide and seek" pair.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to five blind calls. Then on the cube, deliberately build the case: solve a slot, pull just the edge and reseat it <em>flipped</em>, then fix it — <span class="moves">R U R'</span>, re-pair, insert. Do the same with a twisted corner.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions:</strong> at the end of the first two layers, scan all four slots for clean colour runs before moving to the last layer. Catching a wrong slot now saves a broken solve later.</p>
+  <p style="margin-bottom:0"><strong>Primary source:</strong> <a href="https://jperm.net/3x3">J Perm — F2L</a>. Watch how he pulls a mis-set piece back out with a trigger rather than fighting it in place.</p>
+</div>
+
+<p style="font-size:16px;color:var(--muted)">Your cube is the final judge — these were simulator-checked, but if your hands ever produce something the pictures don't predict, trust the cube and ask me.</p>
+
+<footer>
+  Lesson 18 of the Rubik's Cube curriculum · F2L (first two layers), part 4 · Sources: <a href="https://jperm.net/3x3">J Perm — F2L</a> · <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">Ruwix — F2L</a> · Sequences verified with the workspace <a href="../assets/cube.py">cube simulator</a> · See also <a href="0017-bring-the-edge-up.html">Lesson 17</a>, <a href="0016-build-the-pair.html">Lesson 16</a>, the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Slot won't behave? Ask me — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script src="../assets/cube-render.js"></script>
+<script>
+/* ---- trainer -------------------------------------------------------- */
+(function () {
+  var CASES = [
+    { a:'ok',  spec:{corner:0,fr:'solved'}, hint:'Clean green/red runs → leave it' },
+    { a:'fix', spec:{corner:0,fr:'flip'},   hint:'Edge colours swapped → R U R\'' },
+    { a:'fix', spec:{corner:0,fr:'twist'},  hint:'White on a side → R U R\'' },
+    { a:'ok',  spec:{corner:0,fr:'solved'}, hint:'Clean runs, no white on a side → leave it' },
+    { a:'fix', spec:{corner:0,fr:'wrong'},  hint:'Colours that don\'t belong here → R U R\'' },
+    { a:'fix', spec:{corner:0,fr:'flip'},   hint:'Red breaks the green run → R U R\'' }
+  ];
+  var order=[], idx=0, streak=0, best=0, blind=false, locked=false, cur=null;
+  var stageEl=document.getElementById('stage'), msgEl=document.getElementById('msg');
+  var streakEl=document.getElementById('streak'), bestEl=document.getElementById('best');
+  var modeBtn=document.getElementById('mode'), subEl=document.getElementById('sub'), pad=document.getElementById('pad');
+
+  function reshuffle(){ order=CASES.map(function(c,i){return i;});
+    for(var i=order.length-1;i>0;i--){ var j=(i*5+streak*3+best+1)%(i+1); var t=order[i];order[i]=order[j];order[j]=t; } idx=0; }
+  function next(){ if(idx>=order.length) reshuffle(); cur=CASES[order[idx]]; idx++;
+    stageEl.innerHTML = window.__cube(cur.spec); }
+  function setMsg(t,k){ msgEl.textContent=t||' '; msgEl.className='msg'+(k?' '+k:''); }
+  function flash(b,c){ if(!b)return; b.classList.add(c); setTimeout(function(){b.classList.remove(c);},220); }
+  function answer(a,btn){ if(locked||!cur) return;
+    if(a===cur.a){ flash(btn,'flash-good'); streak++; if(streak>best)best=streak;
+      streakEl.textContent=streak; bestEl.textContent=best;
+      if(streak>=5) setMsg('Five in a row — take it to the cube. 🎉','good'); else setMsg('Right call. '+streak+' in a row.','good');
+      locked=true; setTimeout(function(){locked=false; next(); if(streak<5) setMsg('','');},700);
+    } else { flash(btn,'flash-bad'); streak=0; streakEl.textContent=0;
+      setMsg(blind ? 'Look at the colour runs again — clean, or broken? Back to zero.' : 'Not quite — '+cur.hint+'. Back to zero.','bad');
+      locked=true; setTimeout(function(){locked=false;},750); } }
+  pad.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) answer(b.getAttribute('data-a'),b); });
+  modeBtn.addEventListener('click',function(){ blind=!blind; modeBtn.textContent=blind?'Blind':'Guided'; modeBtn.classList.toggle('on',!blind);
+    subEl.textContent=blind?'Just the slot. Call it from the colours.':'Read the slot\'s two faces. Clean, or broken?';
+    streak=0; streakEl.textContent=0; setMsg('',''); reshuffle(); next(); });
+  reshuffle(); next();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 12 — Permute the Last Layer: Two Algorithms to Finish the Cube</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+    --grey: #d8d4cd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 20px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .new { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 28px 0; color: #faf9f7; }
+  .new .lbl { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 6px; }
+  .new .seq { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 23px; font-weight: 700; letter-spacing: 0.04em; }
+  .new .gloss { font-size: 15px; color: #cfcac3; font-style: italic; margin: 8px 0 0; }
+
+  table.holds { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 17px; }
+  table.holds th, table.holds td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.holds th { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  table.holds td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* trainer */
+  .trainer { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .trainer h4 { margin: 0 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 18px; font-style: italic; }
+  .slots { display: flex; gap: 7px; justify-content: center; margin: 0 0 18px; flex-wrap: wrap; }
+  .slot { width: 48px; height: 52px; border-radius: 8px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 16px; font-weight: 700; color: var(--muted); background: var(--bg); transition: all .12s; }
+  .slot.ghost { color: #cfcac3; }
+  .slot.cur { border-style: solid; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(200,64,26,0.12); }
+  .slot.done { border-style: solid; border-color: var(--good); background: var(--good-bg); color: var(--good); }
+  .slot.err { border-style: solid; border-color: var(--bad); background: var(--bad-bg); color: var(--bad); animation: shake .3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
+  .pad button { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 21px; font-weight: 700; padding: 15px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s; }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls { display: flex; gap: 8px; }
+  .ctrls button { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  .ctrls button:hover { border-color: var(--ink); }
+  .ctrls button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .msg { text-align: center; font-family: -apple-system, sans-serif; font-weight: 600; min-height: 24px; margin: 16px 0 0; font-size: 16px; }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li { counter-increment: step; position: relative; padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px; }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before { content: counter(step); position: absolute; left: -20px; top: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px; }
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .practice h4 { margin: 0 0 10px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+  .note { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 18px 22px; margin: 28px 0; font-size: 17px; }
+  .note strong:first-child { color: #1c5a9e; }
+  .twins { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  .twins .col { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .twins .col h4 { margin: 0 0 6px; font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .twins .col p { margin: 0; font-size: 15.5px; }
+  @media (max-width: 560px) { .twins { grid-template-columns: 1fr; } }
+
+  /* headlights diagram */
+  .hl-fig { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin: 28px 0 8px; }
+  .hl-fig figure { margin: 0; text-align: center; }
+  .face { display: inline-grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap: 4px; padding: 8px; background: #1a1a1a; border-radius: 10px; }
+  .face span { border-radius: 5px; background: #43403b; }
+  .face .red   { background: #c0392b; }
+  .face .blue  { background: #2f6fd6; }
+  .face .green { background: #2e9e54; }
+  .face .grille{ background: #5d5a55; }
+  .face .lit { box-shadow: 0 0 0 3px #faf9f7, 0 0 0 5px var(--yellow); }
+  .hl-fig figcaption { margin-top: 10px; font-family: -apple-system, sans-serif; font-size: 14.5px; line-height: 1.4; max-width: 190px; }
+  .hl-fig .yes { color: var(--good); font-weight: 700; }
+  .hl-fig .no  { color: var(--bad); font-weight: 700; }
+  table.count { width: 100%; border-collapse: collapse; margin: 8px 0 24px; font-size: 17px; }
+  table.count th, table.count td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.count th { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  table.count td:first-child { font-weight: 700; white-space: nowrap; font-family: 'SF Mono', Consolas, monospace; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 12 · Optimising — completing the new last layer</div>
+  <h1>Permute the Last Layer</h1>
+  <p class="standfirst">Last lesson the top went fully yellow but the pieces sat in the wrong places. This is the lesson that slides them home — and turns your new last layer into a finished cube.</p>
+</header>
+
+<p>In lesson 11 you learned to <strong>orient</strong> the last layer — one repeated <a href="0011-the-sune.html">Sune</a> paints the whole top yellow. But orienting only points every piece <em>up</em>; it doesn't put them where they belong. The corners and edges are yellow-on-top yet still scrambled around the ring. The second half of the intermediate last layer fixes exactly that: <strong>permutation</strong> — <strong>PLL</strong>. <a href="https://www.speedsolving.com/wiki/index.php/PLL">[Speedsolving Wiki]</a></p>
+
+<div class="insight">
+  <strong>Be told the honest price up front.</strong> Orientation cost you one algorithm. Permutation costs <strong>two</strong>: one to cycle the corners, one to cycle the edges. There's no shortcut that reuses something you already own — your old beginner corner move <em>twists</em> pieces, so it can't be used here. But the two new algorithms are <em>twins</em>: they obey the same rule, so you're really learning one idea applied twice.
+</div>
+
+<h2><span class="num">1.</span> The shape of PLL: corners, then edges</h2>
+
+<p>2-look PLL does the layer in two looks, always in this order: <strong>place the corners first, then cycle the edges.</strong> Each look is one algorithm that <strong>cycles three pieces and leaves the fourth alone</strong> — a "3-cycle." That fixed fourth piece is your <strong>anchor</strong>, and the whole method hangs off one rule:</p>
+
+<div class="insight">
+  <strong>The twin rule — anchor to the back.</strong> Find the piece (or pair) that's <em>already finished</em>, hold the cube so it sits at the <strong>back</strong>, then fire the algorithm. The three unfinished pieces rotate into place; the finished one never moves. If it's not solved after one go, re-look and fire again — never more than <strong>twice</strong>.
+</div>
+
+<p>That "never more than twice" isn't a hope — it's been checked exhaustively against every possible last-layer arrangement. Two algorithms, each fired once or twice, finish any cube. Here's the pair, side by side; then we'll drill them one at a time.</p>
+
+<div class="twins">
+  <div class="col">
+    <h4>Look 1 · Corners</h4>
+    <p>A 3-cycle of corners. Anchor = the corner that's already home (front-left). Recognise by <strong>headlights</strong>.</p>
+  </div>
+  <div class="col">
+    <h4>Look 2 · Edges</h4>
+    <p>A 3-cycle of edges. Anchor = the edge that already matches its centre. Recognise the <strong>solved edge</strong>.</p>
+  </div>
+</div>
+
+<h2><span class="num">2.</span> Look 1 — permute the corners</h2>
+
+<p>First, get all four corners into their correct corners of the cube (ignore the edges for now). The recognition cue is <strong>headlights</strong>. By now your top is fully yellow (you've done the Sune), so every <em>side</em> sticker on a top corner is one of the other five colours. Hold the cube at eye level and look at a side face head-on: read only the <strong>two outer stickers of its top row — the corners</strong>. If those two corners are the <strong>same colour as each other</strong>, that's a pair of headlights. The middle sticker between them (the "grille") doesn't matter, and the colour doesn't have to match the centre — only each other.</p>
+
+<div class="hl-fig">
+  <figure>
+    <div class="face" aria-hidden="true">
+      <span class="red lit"></span><span class="grille"></span><span class="red lit"></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+    <figcaption><span class="yes">✓ Headlights.</span> The two top <strong>corners</strong> match (both red). Hold this face at the <strong>back</strong>.</figcaption>
+  </figure>
+  <figure>
+    <div class="face" aria-hidden="true">
+      <span class="red lit"></span><span class="grille"></span><span class="blue lit"></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+    <figcaption><span class="no">✗ Not headlights.</span> The top corners are different colours (red / blue).</figcaption>
+  </figure>
+</div>
+
+<p>Here's the fact that clears up the confusion — and it's a built-in check, verified against every possible corner arrangement: when you walk around the four side faces, the number that show headlights is <strong>always 0, 1, or 4 — never 2 and never 3</strong>. So if it looks like three, look again, because that case doesn't exist. You're almost certainly seeing the four-face case (the back one is just hidden — you can only see three sides at once without turning the cube).</p>
+
+<table class="count">
+  <thead><tr><th>Headlight faces</th><th>What it means</th><th>Do</th></tr></thead>
+  <tbody>
+    <tr><td>4</td><td>Corners already solved</td><td>Skip straight to the edges (§3).</td></tr>
+    <tr><td>1</td><td>The 3-cycle case</td><td>That one face's headlights to the <strong>back</strong>, then A-perm.</td></tr>
+    <tr><td>0</td><td>The diagonal case</td><td>A-perm once from any angle → a single headlight pair appears → re-aim, A-perm again.</td></tr>
+  </tbody>
+</table>
+
+<p>(Worth a sanity check on your cube right now: hold a finished cube and you'll see headlights on all four sides — that's the "4" row. Misread one as "three" and you'd waste an algorithm on already-solved corners.)</p>
+
+<div class="new">
+  <div class="lbl">New algorithm 1 — the corner permutation (an "A-perm")</div>
+  <div class="seq">R' F R' B2 R F' R' B2 R2</div>
+  <div class="gloss">Cycles three corners and leaves the front-left one untouched. Yellow stays on top — it never re-twists what the Sune already fixed.</div>
+</div>
+
+<p>The action is just the table above: headlights to the back (or fire once to summon them in the diagonal case), then run it. Notice the relief: <strong>no <span class="moves">D</span>, no whole-cube flips mid-algorithm</strong> — just R, F and B faces. <a href="https://www.jperm.net/algs/2look/pll">[J Perm]</a> Drill it the usual way: green locks each move in, a wrong tap resets the run. Start <strong>Guided</strong>, then go <strong>Blind</strong>. Goal: <strong>five blind runs in a row</strong>.</p>
+
+<div class="trainer" data-seq="R',F,R',B2,R,F',R',B2,R2" data-name="A-perm (corners)">
+  <h4>Corner-Perm Recall Trainer</h4>
+  <p class="sub goal">Guided mode — tap the sequence in order.</p>
+  <div class="slots"></div>
+  <div class="pad">
+    <button data-m="R'">R'</button>
+    <button data-m="F">F</button>
+    <button data-m="B2">B2</button>
+    <button data-m="R">R</button>
+    <button data-m="F'">F'</button>
+    <button data-m="R2">R2</button>
+  </div>
+  <div class="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b class="streak">0</b> &nbsp;·&nbsp; Best <b class="best">0</b></div>
+    <div class="ctrls">
+      <button class="mode on">Guided</button>
+      <button class="reset">Reset run</button>
+    </div>
+  </div>
+</div>
+
+<h2><span class="num">3.</span> Look 2 — permute the edges</h2>
+
+<p>With the corners home, only the edges remain. Now the anchor is a single <strong>solved edge</strong>: the top edge whose front colour already matches the centre below it. Hold that edge at the <strong>back</strong> and the algorithm cycles the other three into place.</p>
+
+<div class="new">
+  <div class="lbl">New algorithm 2 — the edge permutation (the "U-perm")</div>
+  <div class="seq">R U' R U R U R U' R' U' R2</div>
+  <div class="gloss">Cycles three edges, leaves the back edge alone, and never touches a corner. R and U faces only — the friendliest fingers on the cube.</div>
+</div>
+
+<table class="holds">
+  <thead><tr><th>You see</th><th>Do this</th></tr></thead>
+  <tbody>
+    <tr><td>One solved edge</td><td>Hold it at the <strong>back</strong> and run the U-perm. If it didn't solve, the cycle ran the other way — just run it <strong>once more</strong>.</td></tr>
+    <tr><td>No solved edge at all</td><td>Run the U-perm <strong>once from any angle</strong> — that creates a solved edge. Re-aim it to the back and run it <strong>again</strong>.</td></tr>
+  </tbody>
+</table>
+
+<p>Run the U-perm cleanly five times blind, same as before. (The decoy buttons aren't part of this algorithm — part of the drill is not reaching for them.)</p>
+
+<div class="trainer" data-seq="R,U',R,U,R,U,R,U',R',U',R2" data-name="U-perm (edges)">
+  <h4>Edge-Perm Recall Trainer</h4>
+  <p class="sub goal">Guided mode — tap the sequence in order.</p>
+  <div class="slots"></div>
+  <div class="pad">
+    <button data-m="R">R</button>
+    <button data-m="U'">U'</button>
+    <button data-m="U">U</button>
+    <button data-m="R'">R'</button>
+    <button data-m="R2">R2</button>
+    <button data-m="F">F</button>
+  </div>
+  <div class="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b class="streak">0</b> &nbsp;·&nbsp; Best <b class="best">0</b></div>
+    <div class="ctrls">
+      <button class="mode on">Guided</button>
+      <button class="reset">Reset run</button>
+    </div>
+  </div>
+</div>
+
+<h2><span class="num">4.</span> Put the whole new last layer together</h2>
+
+<p>You now own every piece of the intermediate last layer. End to end, after the second layer is done, the last layer is just <strong>four looks</strong>:</p>
+
+<ul class="steps">
+  <li><strong>Yellow cross</strong> — <span class="moves">F R U R' U' F'</span> (lesson 4). Orient the edges.</li>
+  <li><strong>Yellow corners</strong> — the <a href="0011-the-sune.html">Sune</a>, count-hold-repeat (lesson 11). Now the whole top is yellow.</li>
+  <li><strong>Place the corners</strong> — headlights to the back, A-perm. <em>(new)</em></li>
+  <li><strong>Cycle the edges</strong> — solved edge to the back, U-perm, then a final <span class="moves">U</span> to line everything up. <em>(new)</em> Solved.</li>
+</ul>
+
+<div class="note">
+  <strong>This is the swap-over.</strong> These four looks <em>replace</em> beginner stages 5, 6 and 7 entirely — no more aligning the cross by cases, no more <span class="moves">R' D' R D</span> grind, no more orientation-twisting corner cycle. Keep the old method in your back pocket for one more week if you like, but the moment OLL → PLL feels reliable, retire the old last layer for good. Tell me when you're there and we'll update your solve card.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> each trainer to five blind runs. Then on the cube, solve up to a <em>full yellow top</em> (cross + Sune), and from there practise just the two PLL looks: headlights-to-back A-perm, then solved-edge-to-back U-perm.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions:</strong> do complete OLL → PLL last layers from ten different scrambles. Say the recognition aloud ("headlights at back, A-perm" … "solved edge at back, U-perm"). Let yourself fire an algorithm twice — that's normal, not a mistake.</p>
+  <p style="margin-bottom:0"><strong>When the full OLL → PLL solve is reliable:</strong> tell me. We'll bank the last-layer upgrade, retire stages 5–7 on your solve card, and you'll have a genuinely faster, more elegant solve — exactly the "better" you set out for.</p>
+</div>
+
+<footer>
+  Lesson 12 of the Rubik's Cube curriculum · Completing the intermediate last layer · Primary source: <a href="https://www.jperm.net/algs/2look/pll">J Perm — 2-Look PLL</a> (watch the recognition walkthrough) · Case theory: <a href="https://www.speedsolving.com/wiki/index.php/PLL">Speedsolving Wiki — PLL</a> · Every algorithm and the "≤2 each" guarantee in this lesson was verified by cube simulation. · See also <a href="0011-the-sune.html">Lesson 11 — The Sune</a>, the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · A perm misbehaving? Ask me, your teacher — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+(function () {
+  function initTrainer(root) {
+    var TARGET = root.getAttribute('data-seq').split(',');
+    var pos = 0, streak = 0, best = 0, blind = false, locked = false;
+    var slotsEl = root.querySelector('.slots');
+    var msgEl   = root.querySelector('.msg');
+    var streakEl= root.querySelector('.streak');
+    var bestEl  = root.querySelector('.best');
+    var goalEl  = root.querySelector('.goal');
+    var modeBtn = root.querySelector('.mode');
+    var resetBtn= root.querySelector('.reset');
+    var pad     = root.querySelector('.pad');
+
+    var slotEls = TARGET.map(function () {
+      var d = document.createElement('div'); d.className = 'slot'; slotsEl.appendChild(d); return d;
+    });
+    function render() {
+      TARGET.forEach(function (m, i) {
+        var el = slotEls[i];
+        el.className = 'slot';
+        if (i < pos) { el.className = 'slot done'; el.textContent = m; }
+        else if (i === pos) { el.className = 'slot cur'; el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+        else { el.textContent = blind ? '' : m; if (!blind) el.classList.add('ghost'); }
+      });
+    }
+    function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+    function flash(btn, cls) { if (!btn) return; btn.classList.add(cls); setTimeout(function () { btn.classList.remove(cls); }, 220); }
+    function complete() {
+      locked = true; streak += 1; if (streak > best) best = streak;
+      streakEl.textContent = streak; bestEl.textContent = best;
+      if (streak >= 5) setMsg('Five in a row — take it to the cube. 🎉', 'good');
+      else setMsg('Clean run! ' + streak + ' in a row.', 'good');
+      setTimeout(function () { pos = 0; locked = false; render(); }, 700);
+    }
+    function tap(move, btn) {
+      if (locked) return;
+      if (move === TARGET[pos]) {
+        flash(btn, 'flash-good'); pos += 1; render();
+        if (pos === TARGET.length) complete(); else setMsg('', '');
+      } else {
+        flash(btn, 'flash-bad');
+        if (slotEls[pos]) { slotEls[pos].className = 'slot err'; slotEls[pos].textContent = move; }
+        streak = 0; streakEl.textContent = 0;
+        setMsg('Not there — back to the start. Expected ' + (blind ? 'the next move.' : TARGET[pos] + '.'), 'bad');
+        locked = true; setTimeout(function () { pos = 0; locked = false; render(); }, 650);
+      }
+    }
+    pad.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) tap(b.getAttribute('data-m'), b); });
+    modeBtn.addEventListener('click', function () {
+      blind = !blind;
+      modeBtn.textContent = blind ? 'Blind' : 'Guided';
+      modeBtn.classList.toggle('on', !blind);
+      goalEl.textContent = blind ? 'Blind mode — rebuild it from memory. Aim for five in a row.' : 'Guided mode — tap the sequence in order.';
+      pos = 0; streak = 0; streakEl.textContent = 0; setMsg('', ''); render();
+    });
+    resetBtn.addEventListener('click', function () { pos = 0; locked = false; setMsg('', ''); render(); });
+    render();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.trainer'), initTrainer);
+})();
+</script>
+</body>
+</html>

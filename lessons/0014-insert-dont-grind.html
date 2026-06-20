@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 14 — Insert, Don't Grind: The First-Layer Corners</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --bad: #c62828;
+    --c-white: #f5f5f5;
+    --c-yellow: #ffd500;
+    --c-red: #c41e3a;
+    --c-orange: #ff8c00;
+    --c-blue: #0051ba;
+    --c-green: #009b48;
+    --c-grey: #d8d5d0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 21px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  table.cases {
+    width: 100%; border-collapse: collapse; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px;
+  }
+  table.cases th, table.cases td { text-align: left; padding: 14px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  table.cases th { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  table.cases .moves { font-size: 17px; white-space: nowrap; }
+  .corner {
+    display: inline-grid; grid-template-columns: 30px 30px; grid-template-rows: 30px 30px;
+    gap: 3px; vertical-align: middle;
+  }
+  .corner div { border-radius: 3px; display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-size: 9px; color: rgba(0,0,0,.45); font-weight: 700; }
+  .sq-top { grid-column: 1 / span 2; height: 22px; }
+  .W { background: var(--c-white); border: 1px solid #ccc; } .Y { background: var(--c-yellow); }
+  .R { background: var(--c-red); } .O { background: var(--c-orange); }
+  .B { background: var(--c-blue); } .G { background: var(--c-green); } .X { background: var(--c-grey); }
+  .bigalg { text-align: center; margin: 32px 0; }
+  .bigalg .moves { font-size: 28px; padding: 14px 26px; background: var(--ink); color: var(--bg); border-radius: 10px; display: inline-block; }
+  .bigalg .cap { font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); margin-top: 10px; }
+  .quiz, .practice {
+    border-radius: 10px; padding: 24px 28px; margin: 28px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .quiz { background: var(--card); border: 1px solid var(--border); font-size: 16px; }
+  .quiz h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .quiz .q { font-size: 18px; font-weight: 600; margin-bottom: 14px; font-family: Georgia, serif; }
+  .quiz button.opt {
+    display: block; width: 100%; text-align: left; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px; padding: 11px 14px; margin: 8px 0;
+    font-size: 15.5px; cursor: pointer; font-family: inherit; transition: border-color .15s;
+  }
+  .quiz button.opt:hover { border-color: var(--ink); }
+  .quiz button.opt.correct { border-color: var(--good); background: #e8f5e9; }
+  .quiz button.opt.wrong { border-color: var(--bad); background: #ffebee; }
+  .quiz .feedback { margin-top: 12px; font-size: 15px; display: none; padding: 12px 14px; border-radius: 6px; }
+  .quiz .feedback.show { display: block; }
+  .quiz .feedback.good { background: #e8f5e9; color: var(--good); }
+  .quiz .feedback.bad { background: #ffebee; color: var(--bad); }
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; }
+  .practice h4 { margin: 0 0 10px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+
+  /* recognition trainer */
+  .trainer { background: var(--ink); color: #f3f1ee; border-radius: 12px; padding: 26px 26px 22px; margin: 36px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .trainer h4 { margin: 0 0 4px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #ffb499; }
+  .trainer .goal { font-size: 14px; color: #b9b4ad; margin: 0 0 18px; }
+  .stage { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0 18px; }
+  .stage .corner div { font-size: 10px; }
+  .stage .label { font-size: 14px; color: #cfcac3; max-width: 230px; }
+  .pad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .pad button { font-family: 'SF Mono','Cascadia Code',Consolas,monospace; font-weight: 700; letter-spacing: .06em;
+    font-size: 16px; padding: 14px 6px; border-radius: 8px; border: 1px solid #4a4843; background: #2c2a26; color: #f3f1ee; cursor: pointer; }
+  .pad button:hover { border-color: #ffb499; }
+  .pad button.flash-good { background: #2e7d32; border-color: #2e7d32; }
+  .pad button.flash-bad { background: #c62828; border-color: #c62828; }
+  .pad button small { display:block; font-family: -apple-system, sans-serif; font-weight: 400; font-size: 11px; color: #b9b4ad; margin-top: 4px; letter-spacing: 0; }
+  .meta { display: flex; gap: 22px; margin-top: 18px; font-size: 14px; align-items: center; }
+  .meta .big { font-size: 22px; font-weight: 700; }
+  .meta .msg { margin-left: auto; min-height: 20px; }
+  .meta .msg.good { color: #8ce39a; } .meta .msg.bad { color: #ff9b9b; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 14</div>
+  <h1>Insert, Don't Grind:<br>The First-Layer Corners</h1>
+  <p class="standfirst">You were right — repeating the trigger to drop in a corner is wasteful. Read the corner instead, and one short insertion does the job.</p>
+</header>
+
+<p>Back in <a href="0002-white-corners.html">Lesson 2</a> you learned to park a white corner above its slot and repeat the trigger <span class="moves">R U R' U'</span> until it fell in solved — 1, 3, or 5 times. It always works, but it's a grind: up to <strong>20 face turns</strong> for a single corner, with a squint after every round to see if you're done.</p>
+
+<p>This is the same upgrade you already made on the last layer: stop blindly repeating, <em>read the case</em>, fire the one thing that fits. The first layer has only <strong>three</strong> cases, and two of them are three moves long.</p>
+
+<div class="insight">
+  <strong>The grip does not change.</strong> White on the bottom, yellow centre on top, Front toward your chest — exactly the <a href="reference/glossary.html">solving grip</a> from every other lesson. You never rotate the cube mid-insertion. Everything below assumes the corner is <strong>parked at the top-front-right</strong>, directly above its empty home slot.
+</div>
+
+<h2><span class="num">1.</span> Park first — same as before</h2>
+
+<p>Find a white corner in the top layer. Turn the top (<span class="moves">U</span> only) until its two side colours sit over their matching centres — it's now directly above its home slot at the front-right. Nothing new yet; this is <a href="reference/glossary.html">parking</a>. The new part is what you do <em>instead</em> of grinding.</p>
+
+<h2><span class="num">2.</span> Read the white sticker — three cases</h2>
+
+<p>With the corner parked at the top-front-right, the white sticker can only be in one of three places. That's the whole decision.</p>
+
+<table class="cases">
+  <tr><th>White sticker is…</th><th>What you see</th><th>Insertion</th></tr>
+  <tr>
+    <td><strong>On the right face</strong><br>(pointing right)</td>
+    <td><span class="corner"><div class="sq-top X">top</div><div class="X">F</div><div class="W">R→</div></span></td>
+    <td><span class="moves">R U R'</span></td>
+  </tr>
+  <tr>
+    <td><strong>On the front face</strong><br>(pointing at you)</td>
+    <td><span class="corner"><div class="sq-top X">top</div><div class="W">←F</div><div class="X">R</div></span></td>
+    <td><span class="moves">F' U' F</span></td>
+  </tr>
+  <tr>
+    <td><strong>On top</strong><br>(pointing up)</td>
+    <td><span class="corner"><div class="sq-top W">white up</div><div class="X">F</div><div class="X">R</div></span></td>
+    <td><span class="moves">R U2 R' U' R U R'</span></td>
+  </tr>
+</table>
+
+<div class="insight">
+  <strong>Why these two are mirror images.</strong> <span class="moves">R U R'</span> opens the slot to the right, slides the corner over, closes it. <span class="moves">F' U' F</span> is the exact same idea opening the slot to the front instead. Whichever face the white sticker is hugging, you open <em>that</em> face. The classic source states it in just these two moves plus a reduction for the third case — <a href="https://cube.stanford.edu/class/files/rubiks_cube_solution.pdf">Chang &amp; Garron</a>.
+</div>
+
+<h3>The awkward one: white on top</h3>
+
+<p>White-on-top is the only hard case, because the white sticker is facing the wrong way entirely. The fix is a <em>setup</em>: <span class="moves">R U2 R'</span> spins the corner up and over so white lands on a side, and the rest — <span class="moves">U' R U R'</span> — re-parks it and tucks it in. Seven moves, run as one flowing sequence. (Its mirror, <span class="moves">F' U2 F U F' U' F</span>, is the same thing on the front — use whichever hand you prefer.) Even this worst case beats the 5-rep, 20-move grind.</p>
+
+<div class="bigalg">
+  <span class="moves">R U R'</span> &nbsp;·&nbsp; <span class="moves">F' U' F</span> &nbsp;·&nbsp; <span class="moves">R U2 R' U' R U R'</span>
+  <div class="cap">right-face · front-face · top — all verified by cube simulation</div>
+</div>
+
+<h2><span class="num">3.</span> How much you just saved</h2>
+
+<p>The grind averaged about 12 face turns per corner (4, 12, or 20). The read-and-insert method averages roughly <strong>4</strong> (3, 3, or 7) — and there's no stop-and-check between rounds, so it <em>flows</em>. Across all four corners that's the difference between a stuttering ~48 turns and a smooth ~16. That smoothness is the mission: a more elegant solve, not a faster stopwatch.</p>
+
+<div class="insight">
+  <strong>Sanity-check the <span class="moves">F</span>.</strong> The front-face case uses <span class="moves">F'</span> (front turned <em>counter</em>-clockwise, as if unscrewing a jar lid facing you). Get the direction wrong and you'll feel the bottom layer break. If unsure, do <span class="moves">F</span> then <span class="moves">F'</span> first and watch which way the front turns — the same ritual from the last-layer lessons.
+</div>
+
+<h3>The rescue case still applies</h3>
+
+<p>White corner stuck in the <em>bottom</em> layer (wrong slot, or right slot but twisted)? Same as Lesson 2: hold it at front-right, do <strong>one</strong> <span class="moves">R U R'</span> to pop it into the top, then read it as one of the three cases above.</p>
+
+<h2><span class="num">4.</span> Train the recognition</h2>
+
+<p>The skill isn't the moves — it's naming the case in a glance. Tap the insertion that matches the corner shown. Switch to <strong>Blind</strong> and get five in a row before you take it to the cube.</p>
+
+<div class="trainer" id="rec">
+  <h4>Corner recognition trainer</h4>
+  <p class="goal" id="goal">Guided mode — the right answer is hinted under each button. Five in a row to clear it.</p>
+  <div class="stage">
+    <span class="corner" id="diagram"></span>
+    <span class="label" id="prompt">Where is the white sticker?</span>
+  </div>
+  <div class="pad" id="pad">
+    <button data-k="right">R U R'<small>white on right</small></button>
+    <button data-k="front">F' U' F<small>white on front</small></button>
+    <button data-k="up">R U2 R' U' R U R'<small>white on top</small></button>
+  </div>
+  <div class="meta">
+    <span>streak <span class="big" id="streak">0</span></span>
+    <span>best <span class="big" id="best">0</span></span>
+    <button id="mode" style="margin-left:auto;font-family:inherit;background:#2c2a26;color:#f3f1ee;border:1px solid #4a4843;border-radius:6px;padding:8px 14px;cursor:pointer;">Guided</button>
+    <button id="reset" style="font-family:inherit;background:#2c2a26;color:#f3f1ee;border:1px solid #4a4843;border-radius:6px;padding:8px 14px;cursor:pointer;">Reset</button>
+  </div>
+  <div class="meta"><span class="msg" id="msg">&nbsp;</span></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">A parked corner shows its white sticker pointing straight at your chest. Which insertion?</div>
+  <button class="opt" data-right="0"><span class="moves">R U R'</span> — open the right face.</button>
+  <button class="opt" data-right="1"><span class="moves">F' U' F</span> — open the front face, because white is hugging the front.</button>
+  <button class="opt" data-right="0">Repeat <span class="moves">R U R' U'</span> until it drops.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="quiz" data-quiz>
+  <h4>Check yourself</h4>
+  <div class="q">White is on top of a parked corner. Why can't you just use <span class="moves">R U R'</span> straight away?</div>
+  <button class="opt" data-right="1">White faces the wrong way; a setup (<span class="moves">R U2 R'</span>) must move it onto a side first.</button>
+  <button class="opt" data-right="0">You can — <span class="moves">R U R'</span> works for every orientation.</button>
+  <button class="opt" data-right="0">White on top means the corner is already solved.</button>
+  <div class="feedback"></div>
+</div>
+
+<div class="practice">
+  <h4>Practice — before the next session</h4>
+  <p style="margin-bottom:10px"><strong>1.</strong> Scramble → cross → all four corners, using <em>only</em> reads and inserts. No grinding the trigger.</p>
+  <p style="margin-bottom:10px"><strong>2.</strong> Say the case out loud as you park each corner: "right," "front," or "top" — then fire. Naming it is the skill.</p>
+  <p style="margin-bottom:0"><strong>3.</strong> Once it flows, time nothing — just notice the first layer now goes in without a single stop-and-squint.</p>
+</div>
+
+<p><strong>Primary source:</strong> the corner section of <a href="https://cube.stanford.edu/class/files/rubiks_cube_solution.pdf">Chang &amp; Garron, "How to Solve the Rubik's Cube"</a> (Stanford-hosted) — it gives exactly <span class="moves">R U R'</span>, <span class="moves">F' U' F</span>, and the reduction for the white-up case. Stuck on a real cube state? Post in <a href="https://reddit.com/r/Cubers">r/Cubers</a>.</p>
+
+<p style="font-style:italic;color:var(--muted)">Anything unclear, or want the left-handed mirrors drilled too? I'm your teacher — ask me.</p>
+
+<footer>
+  Lesson 14 of the Rubik's Cube curriculum · Builds on <a href="0002-white-corners.html">Lesson 2 (White Corners)</a> · Terms: <a href="reference/glossary.html">Glossary</a> · Sources: <a href="https://cube.stanford.edu/class/files/rubiks_cube_solution.pdf">Chang &amp; Garron</a> · <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/step-2-first-layer-corners/">Ruwix</a>
+</footer>
+
+</div>
+<script>
+/* multiple-choice quizzes */
+document.querySelectorAll('[data-quiz]').forEach(function (quiz) {
+  var feedback = quiz.querySelector('.feedback');
+  quiz.querySelectorAll('button.opt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var right = btn.dataset.right === '1';
+      quiz.querySelectorAll('button.opt').forEach(function (b) {
+        b.classList.remove('correct', 'wrong');
+        if (b.dataset.right === '1') b.classList.add('correct');
+      });
+      if (!right) btn.classList.add('wrong');
+      feedback.className = 'feedback show ' + (right ? 'good' : 'bad');
+      feedback.textContent = right ? '✓ Correct.' : '✗ Not quite — re-read the table above and try again.';
+    });
+  });
+});
+
+/* recognition trainer */
+(function () {
+  var CASES = {
+    right: { html: '<div class="sq-top X">top</div><div class="X">F</div><div class="W">R&rarr;</div>', label: 'White is on the RIGHT face.' },
+    front: { html: '<div class="sq-top X">top</div><div class="W">&larr;F</div><div class="X">R</div>', label: 'White is on the FRONT face (pointing at you).' },
+    up:    { html: '<div class="sq-top W">white up</div><div class="X">F</div><div class="X">R</div>', label: 'White is on TOP.' }
+  };
+  var KEYS = ['right', 'front', 'up'];
+  var diagram = document.getElementById('diagram');
+  var prompt = document.getElementById('prompt');
+  var pad = document.getElementById('pad');
+  var streakEl = document.getElementById('streak');
+  var bestEl = document.getElementById('best');
+  var msgEl = document.getElementById('msg');
+  var goalEl = document.getElementById('goal');
+  var modeBtn = document.getElementById('mode');
+  var resetBtn = document.getElementById('reset');
+  var cur = null, streak = 0, best = 0, blind = false, locked = false, last = null;
+
+  function pick() {
+    var k;
+    do { k = KEYS[Math.floor(Math.random() * KEYS.length)]; } while (k === last && Math.random() < 0.6);
+    last = k; cur = k;
+    diagram.innerHTML = blind ? CASES[k].html : CASES[k].html;
+    prompt.textContent = blind ? 'Read it and fire.' : CASES[k].label;
+    pad.querySelectorAll('small').forEach(function (s) { s.style.display = blind ? 'none' : 'block'; });
+  }
+  function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+  function flash(btn, cls) { btn.classList.add(cls); setTimeout(function () { btn.classList.remove(cls); }, 220); }
+
+  pad.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || locked) return;
+    if (b.dataset.k === cur) {
+      flash(b, 'flash-good'); streak += 1; if (streak > best) best = streak;
+      streakEl.textContent = streak; bestEl.textContent = best;
+      setMsg(streak >= 5 ? 'Five clean — take it to the cube. 🎉' : 'Right. ' + streak + ' in a row.', 'good');
+      locked = true; setTimeout(function () { locked = false; pick(); }, 600);
+    } else {
+      flash(b, 'flash-bad'); streak = 0; streakEl.textContent = 0;
+      setMsg('No — that was the ' + cur.toUpperCase() + ' case. Back to zero.', 'bad');
+      locked = true; setTimeout(function () { locked = false; pick(); }, 850);
+    }
+  });
+  modeBtn.addEventListener('click', function () {
+    blind = !blind; modeBtn.textContent = blind ? 'Blind' : 'Guided';
+    goalEl.textContent = blind ? 'Blind mode — no hints. Five in a row before you trust your hands.' : 'Guided mode — the right answer is hinted under each button. Five in a row to clear it.';
+    streak = 0; streakEl.textContent = 0; setMsg('', ''); pick();
+  });
+  resetBtn.addEventListener('click', function () { streak = 0; streakEl.textContent = 0; setMsg('', ''); pick(); });
+  pick();
+})();
+</script>
+</body>
+</html>

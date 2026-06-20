@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 10 — Read the Case, Don't Hunt for It</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+    --grey: #d8d4cd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  h3 { font-size: 20px; margin: 32px 0 8px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px;
+    font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+
+  /* Case gallery */
+  .cases { display: flex; flex-wrap: wrap; gap: 16px; margin: 28px 0; }
+  .case {
+    flex: 1 1 150px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 16px; text-align: center;
+  }
+  .case .nm {
+    font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 12px;
+  }
+  .case .cost { font-size: 14px; color: var(--muted); font-style: italic; margin-top: 12px; }
+  .case .cost b { color: var(--ink); font-style: normal; }
+
+  /* The 3x3 top-face grid */
+  .face {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+    width: 96px; margin: 0 auto; aspect-ratio: 1;
+  }
+  .face.big { width: 132px; }
+  .face .cell {
+    background: var(--grey); border-radius: 4px; aspect-ratio: 1;
+  }
+  .face .cell.up { background: var(--yellow); }
+
+  /* The trainer */
+  .trainer {
+    background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
+    padding: 24px; margin: 32px 0;
+  }
+  .trainer h4 {
+    margin: 0 0 4px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+  }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 18px; font-style: italic; }
+  .stage { display: flex; justify-content: center; margin: 8px 0 22px; }
+  .pad { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
+  .pad button {
+    font-family: -apple-system, sans-serif;
+    font-size: 18px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 16px 0; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s;
+  }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .msg {
+    text-align: center; font-family: -apple-system, sans-serif; font-weight: 600;
+    min-height: 48px; margin: 16px 0 0; font-size: 16px; line-height: 1.4;
+  }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls button {
+    font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600;
+    padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--ink); cursor: pointer;
+  }
+  .ctrls button:hover { border-color: var(--ink); }
+
+  table.reads { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 17px; }
+  table.reads th, table.reads td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.reads th {
+    font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+  }
+  table.reads td:first-child { font-weight: 700; }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px;
+  }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: -20px; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--ink); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px;
+  }
+  .practice {
+    background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px;
+    padding: 24px 28px; margin: 28px 0;
+  }
+  .practice h4 {
+    margin: 0 0 10px; font-family: -apple-system, sans-serif;
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00;
+  }
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted);
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 10 · Optimising</div>
+  <h1>Read the Case, Don't Hunt for It</h1>
+  <p class="standfirst">Your first optimisation isn't faster hands — it's a faster <em>eye</em>. The seconds you lose aren't in the turning. They're in the staring.</p>
+</header>
+
+<p>You can solve the cube. So watch yourself do it: the turning is quick and continuous, then — <em>stop</em>. You hold the cube up, rotate it around, hunt for the piece, work out which case you're in, and only then move again. Those frozen moments are where a solve actually goes slow. Speedcubers have a name for the skill that kills them: <strong>look-ahead</strong> — but the beginner version is simpler. It's just <em>recognition</em>: naming the situation in one glance instead of puzzling it out.</p>
+
+<div class="insight">
+  <strong>The optimisation, in one line:</strong> the pause is the <em>look</em>, not the <em>turn</em>. You already own every algorithm. What's left to sharpen is the half-second before each one — and that's pure pattern recognition, no new memorisation.
+</div>
+
+<p>This lesson drills that on the single richest target in the whole solve: <strong>the yellow cross</strong> (stage 4, <span class="moves">F R U R' U' F'</span>). It's the best place to start because it has only three patterns, they're unmistakable once named, and reading them right doesn't just save staring time — it saves whole <em>applications</em> of the algorithm.</p>
+
+<h2><span class="num">1.</span> Three patterns. That's the entire stage.</h2>
+
+<p>Look only at the four yellow <em>edges</em> around the centre (ignore corners completely). There are exactly three things you can see — plus the finished cross:</p>
+
+<div class="cases">
+  <div class="case">
+    <div class="nm">Dot</div>
+    <div class="face"><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell up"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span></div>
+    <div class="cost">No edges up. <b>2 applications.</b></div>
+  </div>
+  <div class="case">
+    <div class="nm">The L</div>
+    <div class="face"><span class="cell"></span><span class="cell up"></span><span class="cell"></span><span class="cell up"></span><span class="cell up"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span></div>
+    <div class="cost">Two <em>adjacent</em> edges. <b>1 application.</b></div>
+  </div>
+  <div class="case">
+    <div class="nm">The Line</div>
+    <div class="face"><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell up"></span><span class="cell up"></span><span class="cell up"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span></div>
+    <div class="cost">Two <em>opposite</em> edges. <b>1 application.</b></div>
+  </div>
+  <div class="case">
+    <div class="nm">Cross</div>
+    <div class="face"><span class="cell"></span><span class="cell up"></span><span class="cell"></span><span class="cell up"></span><span class="cell up"></span><span class="cell up"></span><span class="cell"></span><span class="cell up"></span><span class="cell"></span></div>
+    <div class="cost">All four. <b>Done — 0.</b></div>
+  </div>
+</div>
+
+<p>The only judgement call is <strong>adjacent vs opposite</strong>: two lit edges next to each other form an <strong>L</strong>; two facing across the centre form a <strong>line</strong>. Everything else is "no edges" (dot) or "all edges" (cross). That's the whole recognition. <a href="https://jperm.net/3x3">[J Perm]</a> <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">[Ruwix]</a></p>
+
+<h2><span class="num">2.</span> Reading it sets up the cheapest path</h2>
+
+<p>Here's why recognition pays double. <span class="moves">F R U R' U' F'</span> climbs the ladder <strong>dot → L / line → cross</strong> — but only if you <em>hold the pattern the right way round first</em>. Hold it wrong and you fall back down to a dot and waste a whole application. So the read tells you both <em>how many</em> applications and <em>how to grip</em>:</p>
+
+<table class="reads">
+  <thead><tr><th>You see</th><th>Hold it like this</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr><td>Line</td><td>Turn U until the line is <strong>horizontal</strong> (left↔right), then run the algorithm.</td><td>1×</td></tr>
+    <tr><td>The L</td><td>Turn U until the two lit edges point <strong>up and left</strong> (the bend sits in the back-left corner), then run it.</td><td>1×</td></tr>
+    <tr><td>Dot</td><td>Run it once from any angle — you'll get an L or a line — then read again and finish.</td><td>2×</td></tr>
+  </tbody>
+</table>
+
+<div class="insight">
+  <strong>Built-in self-check.</strong> If a line or L doesn't go straight to the cross, you held it 180° off — that's the <em>only</em> way to overshoot the costs above. Reset with a <span class="moves">U2</span> (the cross step only cares about how the top is rotated) and run it again. Get the grip right and the stage is deterministic: you know you're done before you start.
+</div>
+
+<h2><span class="num">3.</span> Drill the read until it's instant</h2>
+
+<p>Below, a random top-face flashes up. <strong>Name the case</strong> as fast as you can — Dot, L, Line, or Cross. Correct answers lock in green and show you the grip-and-cost coaching; a wrong one resets your streak. Don't count edges one by one — let the <em>shape</em> hit you. Goal: <strong>eight correct in a row.</strong></p>
+
+<div class="trainer" id="trainer">
+  <h4>Yellow-Cross Recognition Trainer</h4>
+  <p class="sub" id="sub">Name the pattern. Trust the shape, don't count.</p>
+
+  <div class="stage"><div class="face big" id="stageFace"></div></div>
+
+  <div class="pad" id="pad">
+    <button data-c="dot">Dot</button>
+    <button data-c="L">The L</button>
+    <button data-c="line">The Line</button>
+    <button data-c="cross">Cross</button>
+  </div>
+
+  <div class="msg" id="msg">&nbsp;</div>
+
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="reset">Reset</button></div>
+  </div>
+</div>
+
+<p>What you're training is the move <em>before</em> the move — the instant decision that used to be a pause. Do enough reps and the case will announce itself the moment yellow comes up top, with no conscious counting at all.</p>
+
+<h2><span class="num">4.</span> The same eye works everywhere</h2>
+
+<p>Recognition isn't a yellow-cross trick — it's the whole optimisation, and you've already been doing lighter versions of it. Once the cross read is instant, the same "glance, don't hunt" habit collapses the other pauses too:</p>
+
+<ul class="steps">
+  <li><strong>Stage 5 — align the cross.</strong> Before any turning, count how many cross edges already match their centre. It's always <strong>0, 2, or 4</strong>. Four means skip the stage. Two means turn the matched pair to the back-and-right and you're one edge-swap from done — no trial and error.</li>
+  <li><strong>Stage 6 — position the corners.</strong> Audit how many corners are already home: always <strong>0, 1, or 4</strong>. One-correct tells you exactly where to grip; zero tells you to just run the cycle once and re-audit. You stop guessing which corner goes where.</li>
+  <li><strong>Stage 7 — orient the corners.</strong> Glance at how many corners still need twisting before you start, so the "borrowed pieces" chaos mid-stage never makes you doubt you're on track.</li>
+</ul>
+
+<p>Every one of these is the same skill: <em>read the small number first, then act with certainty.</em> That certainty — not faster fingers — is what makes a solve feel smooth.</p>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to eight in a row, then on a real cube reach a yellow-cross case and <em>say the name and the cost out loud before you turn</em> — "Line, horizontal, one." Do five solves narrating just that one read.</p>
+  <p style="margin-bottom:10px"><strong>Next few solves:</strong> add the stage-5 and stage-6 counts out loud too (the 0/2/4 and 0/1/4 audits). Narrating the read is what turns it from "work it out" into "just see it."</p>
+  <p style="margin-bottom:0"><strong>Watch for:</strong> your pauses shrinking. When the cube stops freezing between stages, the optimisation has landed — and we can talk about trimming wasted <em>moves</em> next (lesson 11).</p>
+</div>
+
+<footer>
+  Lesson 10 of the Rubik's Cube curriculum · Yellow-cross cases &amp; method: <a href="https://jperm.net/3x3">J Perm — Beginner 3×3</a> · <a href="https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-beginners-method/">Ruwix Beginner's Method</a> · See the moves animated: <a href="https://solvethecube.com/">SolveTheCube</a> · See also the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Read not clicking, or a case that won't resolve? Ask me, your teacher — or post a photo to <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+(function () {
+  // edges order: [top, right, bottom, left]; center always up.
+  var CASES = {
+    dot:   [[false,false,false,false]],
+    L:     [[true,true,false,false],[false,true,true,false],[false,false,true,true],[true,false,false,true]],
+    line:  [[true,false,true,false],[false,true,false,true]],
+    cross: [[true,true,true,true]]
+  };
+  var COACH = {
+    dot:   'Dot — no edges up. Run it once from any angle to get an L or line, then read again. 2 applications total.',
+    L:     'The L — two adjacent edges. Hold them pointing up-and-left, one application straight to the cross.',
+    line:  'The Line — two opposite edges. Turn it horizontal, one application straight to the cross.',
+    cross: 'Cross — already done. 0 applications. Move on to aligning it (stage 5).'
+  };
+  var KEYS = ['dot','L','line','cross'];
+  var TARGET = 8;
+
+  var faceEl  = document.getElementById('stageFace');
+  var msgEl   = document.getElementById('msg');
+  var subEl   = document.getElementById('sub');
+  var streakEl= document.getElementById('streak');
+  var bestEl  = document.getElementById('best');
+  var pad     = document.getElementById('pad');
+  var resetBtn= document.getElementById('reset');
+
+  var streak = 0, best = 0, current = null, locked = false;
+
+  // build 9 cells once
+  var cells = [];
+  for (var i = 0; i < 9; i++) {
+    var c = document.createElement('span');
+    c.className = 'cell';
+    faceEl.appendChild(c);
+    cells.push(c);
+  }
+  // grid index for each edge: top=1, right=5, bottom=7, left=3; center=4
+  var EDGE_IDX = [1, 5, 7, 3];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function deal() {
+    current = pick(KEYS);
+    var pattern = pick(CASES[current]);
+    cells.forEach(function (c) { c.className = 'cell'; });
+    cells[4].className = 'cell up'; // center
+    pattern.forEach(function (on, k) {
+      if (on) cells[EDGE_IDX[k]].className = 'cell up';
+    });
+  }
+
+  function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+
+  function flash(btn, cls) {
+    if (!btn) return;
+    btn.classList.add(cls);
+    setTimeout(function () { btn.classList.remove(cls); }, 220);
+  }
+
+  function answer(choice, btn) {
+    if (locked) return;
+    if (choice === current) {
+      flash(btn, 'flash-good');
+      streak += 1;
+      if (streak > best) { best = streak; bestEl.textContent = best; }
+      streakEl.textContent = streak;
+      if (streak >= TARGET) setMsg('Eight in a row — your eye is trained. Take it to the cube. 🎉', 'good');
+      else setMsg(COACH[current], 'good');
+      locked = true;
+      setTimeout(function () { locked = false; deal(); }, 850);
+    } else {
+      flash(btn, 'flash-bad');
+      streak = 0; streakEl.textContent = 0;
+      setMsg('That was the ' + label(current) + '. ' + COACH[current], 'bad');
+      locked = true;
+      setTimeout(function () { locked = false; deal(); }, 1300);
+    }
+  }
+
+  function label(k) { return k === 'L' ? 'L' : k === 'line' ? 'Line' : k === 'dot' ? 'Dot' : 'Cross'; }
+
+  pad.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) answer(b.getAttribute('data-c'), b);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    streak = 0; streakEl.textContent = 0; setMsg('', ''); deal();
+  });
+
+  deal();
+})();
+</script>
+</body>
+</html>

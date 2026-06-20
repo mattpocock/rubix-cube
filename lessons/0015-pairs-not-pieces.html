@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 15 — Pairs, Not Pieces: Your First Step into F2L</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+    --white: #f3f1ec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 64px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .new { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 28px 0; color: #faf9f7; }
+  .new .lbl { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 6px; }
+  .new .seq { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 26px; font-weight: 700; letter-spacing: 0.06em; }
+  .new .gloss { font-size: 15px; color: #cfcac3; font-style: italic; margin: 8px 0 0; }
+
+  table.holds { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 17px; }
+  table.holds th, table.holds td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.holds th { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  table.holds td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* old vs new diagram */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+  @media (max-width: 560px) { .compare { grid-template-columns: 1fr; } }
+  .compare .col { border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; background: var(--card); }
+  .compare h4 { margin: 0 0 8px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .compare .old h4 { color: var(--muted); }
+  .compare .nw h4 { color: var(--good); }
+  .compare p { font-size: 15.5px; margin: 0; }
+
+  /* trainer */
+  .trainer { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .trainer h4 { margin: 0 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 18px; font-style: italic; }
+  .case {
+    border: 2px dashed var(--border); border-radius: 12px; background: var(--bg);
+    padding: 22px 18px; text-align: center; margin: 0 0 18px;
+  }
+  .case .state { font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .case .desc { font-size: 22px; font-weight: 700; line-height: 1.35; }
+  .case .desc .hl { color: var(--accent); }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pad button { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 17px; font-weight: 700; padding: 16px 6px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s; }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls button { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  .ctrls button:hover { border-color: var(--ink); }
+  .msg { text-align: center; font-family: -apple-system, sans-serif; font-weight: 600; min-height: 24px; margin: 16px 0 0; font-size: 16px; }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li { counter-increment: step; position: relative; padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px; }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before { content: counter(step); position: absolute; left: -20px; top: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px; }
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .practice h4 { margin: 0 0 10px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+  .note { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 18px 22px; margin: 28px 0; font-size: 17px; }
+  .note strong:first-child { color: #1c5a9e; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 15 · F2L — first two layers, part 1</div>
+  <h1>Pairs, Not Pieces</h1>
+  <p class="standfirst">The single biggest inefficiency left in your solve is that you build the first two layers in two separate passes. F2L does them as one — and the insert is a move you already own.</p>
+</header>
+
+<p>You picked the big one. Right now your solve has two early stages that fight each other: <strong>stage 2</strong> drops the four white corners, then <strong>stage 3</strong> threads the four middle edges — and every middle-edge insert temporarily yanks a corner back out and puts it back. Eight operations, lots of repaired work. <strong>F2L</strong> (First Two Layers) replaces both with four clean moves. <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">[Ruwix]</a></p>
+
+<div class="insight">
+  <strong>The whole idea in one sentence.</strong> A white corner and the middle edge that belongs beside it form a natural <strong>pair</strong>. Instead of solving them on two separate visits, you join them in the top layer and drop the pair into its <strong>slot</strong> in one motion. Four pairs → the entire bottom two layers, done together. <a href="https://www.speedcube.us/blogs/speedcubing-solutions/3x3-beginner-f2l-first-two-layers-of-cfop-method">[speedcube.us]</a>
+</div>
+
+<div class="compare">
+  <div class="col old">
+    <h4>Your solve now</h4>
+    <p>Stage 2: place 4 corners. Stage 3: place 4 edges, each insert disturbing a corner. Two passes, ~8 operations.</p>
+  </div>
+  <div class="col nw">
+    <h4>With F2L</h4>
+    <p>4 corner+edge <em>pairs</em>, each joined and slotted in one go. One pass, 4 operations, nothing re-disturbed.</p>
+  </div>
+</div>
+
+<h2><span class="num">1.</span> Nothing changes about your grip</h2>
+
+<p>Good news first: F2L uses the <strong>exact grip you already solve in</strong> — white cross on the bottom, yellow up, the <a href="../reference/glossary.html">solving grip</a> you've held since lesson 2. The white cross stays as its own first step, unchanged. You build each pair on your workbench (the top layer) and drop it into the empty <strong>slot</strong> at the <strong>front-right-bottom</strong> corner of the cube. That's the only slot you ever insert into — you rotate the whole cube to bring each slot to the front-right.</p>
+
+<h2><span class="num">2.</span> The insert is already in your hands</h2>
+
+<p>Here's why this is the right next step and not a mountain. When a pair is <em>already joined</em> in the top layer with its <strong>white sticker facing out to a side</strong>, sliding it home is the very same <a href="0014-insert-dont-grind.html">corner insert</a> you learned in lesson 14 — it just carries the edge down with it: <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">[Ruwix]</a></p>
+
+<table class="holds">
+  <thead><tr><th>Joined pair, white sticker faces…</th><th>Insert</th></tr></thead>
+  <tbody>
+    <tr><td>the <strong>Right</strong> face</td><td><span class="moves">R U R'</span></td></tr>
+    <tr><td>the <strong>Front</strong> face (mirror)</td><td><span class="moves">F' U' F</span></td></tr>
+  </tbody>
+</table>
+
+<div class="insight">
+  <strong>The insert isn't new. The skill is the pairing.</strong> <span class="moves">R U R'</span> and <span class="moves">F' U' F</span> are exactly the moves that dropped a lone corner in lesson 14. The only difference: park the joined pair so the <em>corner</em> sits above its slot with white on the side, and its <em>edge</em> rides along on top — one insert sends both home. So your entire job in F2L is getting the pair <em>joined and parked</em>; the finish is muscle memory you already have.
+</div>
+
+<h2><span class="num">3.</span> Ready, or not yet?</h2>
+
+<p>Because the insert is free, the real skill this lesson is <strong>recognition</strong>: is the pair actually ready to go in? A pair is <strong>ready</strong> when three things are true — the corner is parked above its slot, its <strong>white faces a side</strong> (not up), and the matching edge is sitting in the top layer right alongside it, continuing the pair's two colours. If white is pointing <em>up</em>, or the corner and edge are scattered apart, it's <strong>not ready</strong> — that's the <em>joining</em> skill, and it's the whole of the next lesson.</p>
+
+<p>Train that judgement now. A pair-state appears; tap the right call. <span class="moves">R U R'</span> or <span class="moves">F' U' F</span> if it's ready to insert, or <strong>Build first</strong> if it isn't. Start guided, then go blind. Goal: <strong>five in a row</strong>.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Ready-Pair Trainer</h4>
+  <p class="sub" id="sub">Read the pair's state, then choose the right call.</p>
+  <div class="case">
+    <div class="state">Joined pair in the top layer</div>
+    <div class="desc" id="desc">—</div>
+  </div>
+  <div class="pad" id="pad">
+    <button data-a="R">R U R'</button>
+    <button data-a="F">F' U' F</button>
+    <button data-a="B">Build first</button>
+  </div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="mode" class="on">Guided</button></div>
+  </div>
+</div>
+
+<p style="font-size:15.5px;color:var(--muted)">In <strong>Guided</strong> mode the state spells out the answer; in <strong>Blind</strong> it just describes what you'd see on the cube, and you make the call. The "Build first" cases — white-up and split pairs — are next lesson's job; for now, just naming them is the win.</p>
+
+<h2><span class="num">4.</span> Take it to the cube</h2>
+
+<ul class="steps">
+  <li><strong>Make your white cross as normal.</strong> Then stop — don't run stage 2 yet.</li>
+  <li><strong>Hunt for a ready pair.</strong> Look in the top layer for a white corner already joined to its edge, white facing out. Rotate the whole cube so its empty slot is front-right, park it, and fire <span class="moves">R U R'</span> or <span class="moves">F' U' F</span>. A whole pair drops in at once — feel how much cleaner that is than corner-then-edge.</li>
+  <li><strong>Insert every ready pair you can find.</strong> Some slots will hand you a ready pair; grab those wins.</li>
+  <li><strong>Fall back for the rest — this week only.</strong> For pairs that aren't ready (white up, or pieces split), just finish that slot the <em>old</em> way: your stage-2 corner insert, then the stage-3 edge insert. You lose nothing, and next lesson replaces this fallback with proper pairing.</li>
+</ul>
+
+<div class="note">
+  <strong>Keep your full solve working.</strong> Exactly like the Sune and PLL roll-outs: build the new skill in parallel, don't bet a solve on it. Insert the ready pairs with F2L, finish everything else the way you already can. When spotting and slotting a ready pair feels automatic, tell me — that's when we teach the <em>join</em>, and F2L starts replacing stages 2 and 3 for good.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to five blind calls in a row, then on the cube insert at least three ready pairs across a few scrambles (cross → find a ready pair → <span class="moves">R U R'</span> / <span class="moves">F' U' F</span>).</p>
+  <p style="margin-bottom:10px"><strong>Watch one walkthrough:</strong> see a ready pair joined and inserted on a real cube — the visual locks in faster than words.</p>
+  <p style="margin-bottom:0"><strong>Primary source:</strong> <a href="https://jperm.net/3x3">J Perm — How to Get Faster: F2L</a>, the most trusted F2L tutorial. Watch only as far as the basic <em>connected-pair</em> insert for now; the rest is later lessons.</p>
+</div>
+
+<p style="font-size:16px;color:var(--muted)">Your cube is the final judge — if a move ever does something other than what's written here, trust the cube and ask me. That's how we've caught everything so far.</p>
+
+<footer>
+  Lesson 15 of the Rubik's Cube curriculum · F2L (first two layers), part 1 of the new mission thread · Sources: <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">Ruwix — F2L</a> · <a href="https://www.speedcube.us/blogs/speedcubing-solutions/3x3-beginner-f2l-first-two-layers-of-cfop-method">speedcube.us — Beginner F2L</a> · <a href="https://jperm.net/3x3">J Perm — F2L</a> · See also the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Pair not behaving? Ask me, your teacher — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+(function () {
+  // Cases: each has a description (blind = what you'd see), an answer, and a guided hint suffix.
+  var CASES = [
+    { a:'R', blind:'Corner parked, <span class="hl">white faces RIGHT</span>, edge alongside.', guided:' → ready: R U R\'' },
+    { a:'F', blind:'Corner parked, <span class="hl">white faces FRONT</span>, edge alongside.', guided:' → ready: F\' U\' F' },
+    { a:'R', blind:'Joined pair on the right, <span class="hl">white on the right side</span>.', guided:' → ready: R U R\'' },
+    { a:'F', blind:'Joined pair at the front, <span class="hl">white on the front side</span>.', guided:' → ready: F\' U\' F' },
+    { a:'B', blind:'Corner shows <span class="hl">white on TOP</span>.', guided:' → not ready: build first' },
+    { a:'B', blind:'Corner and edge are <span class="hl">apart</span> (not joined).', guided:' → not ready: build first' },
+    { a:'B', blind:'<span class="hl">White on top</span>, edge tucked beside it.', guided:' → not ready: build first' }
+  ];
+  var order = [], idx = 0, streak = 0, best = 0, blind = false, locked = false, cur = null;
+
+  var descEl = document.getElementById('desc');
+  var msgEl  = document.getElementById('msg');
+  var streakEl = document.getElementById('streak');
+  var bestEl = document.getElementById('best');
+  var modeBtn = document.getElementById('mode');
+  var subEl = document.getElementById('sub');
+  var pad = document.getElementById('pad');
+
+  function reshuffle() {
+    // simple deterministic-ish rotation through cases, varied by streak so it isn't fixed
+    order = CASES.map(function (c, i) { return i; });
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = (i * 7 + streak * 3 + best + 1) % (i + 1);
+      var t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    idx = 0;
+  }
+  function next() {
+    if (idx >= order.length) reshuffle();
+    cur = CASES[order[idx]]; idx++;
+    descEl.innerHTML = cur.blind + (blind ? '' : '<span style="color:var(--muted);font-weight:400">' + cur.guided + '</span>');
+  }
+  function setMsg(t, kind) { msgEl.textContent = t || ' '; msgEl.className = 'msg' + (kind ? ' ' + kind : ''); }
+  function flash(btn, cls) { if (!btn) return; btn.classList.add(cls); setTimeout(function () { btn.classList.remove(cls); }, 220); }
+
+  function answer(a, btn) {
+    if (locked || !cur) return;
+    if (a === cur.a) {
+      flash(btn, 'flash-good');
+      streak += 1; if (streak > best) best = streak;
+      streakEl.textContent = streak; bestEl.textContent = best;
+      if (streak >= 5) setMsg('Five in a row — take it to the cube. 🎉', 'good');
+      else setMsg('Right call. ' + streak + ' in a row.', 'good');
+      locked = true; setTimeout(function () { locked = false; next(); if (streak < 5) setMsg('', ''); }, 650);
+    } else {
+      flash(btn, 'flash-bad');
+      streak = 0; streakEl.textContent = 0;
+      setMsg('Not that one — read where white faces. Back to zero.', 'bad');
+      locked = true; setTimeout(function () { locked = false; }, 650);
+    }
+  }
+
+  pad.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) answer(b.getAttribute('data-a'), b); });
+  modeBtn.addEventListener('click', function () {
+    blind = !blind;
+    modeBtn.textContent = blind ? 'Blind' : 'Guided';
+    modeBtn.classList.toggle('on', !blind);
+    subEl.textContent = blind ? 'Blind — just the state. Make the call from memory.' : 'Read the pair\'s state, then choose the right call.';
+    streak = 0; streakEl.textContent = 0; setMsg('', ''); reshuffle(); next();
+  });
+  reshuffle(); next();
+})();
+</script>
+</body>
+</html>
+</content>

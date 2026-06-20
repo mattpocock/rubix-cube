@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17 — Bring the Edge Up: Freeing a Trapped Edge</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+<style>
+  /* lesson-specific only — shared course styles live in assets/lesson.css */
+  /* cube figure + legend */
+  .orient { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 28px 0; }
+  .legend { font-family: -apple-system, sans-serif; font-size: 14.5px; line-height: 1.5; max-width: 320px; }
+  .legend .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .legend .sw { width: 20px; height: 20px; border-radius: 4px; border: 1.5px solid #13110f; flex: none; }
+  .legend .sw.dash { border-style: dashed; border-color: var(--accent); }
+
+  /* two-home compare */
+  .homes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+  @media (max-width: 560px) { .homes { grid-template-columns: 1fr; } }
+  .homes .col { border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 20px; background: var(--card); text-align: center; }
+  .homes h4 { margin: 0 0 6px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .homes .ready h4 { color: var(--good); }
+  .homes .trap h4 { color: var(--accent); }
+  .homes svg { width: 168px; height: auto; }
+  .homes p { font-size: 15px; margin: 8px 0 0; color: var(--muted); }
+  .homes .verdict { font-weight: 700; color: var(--ink); font-size: 16px; margin-top: 10px; }
+
+  .pad { grid-template-columns: 1fr 1fr; }   /* two-button trainer */
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 17 · F2L — first two layers, part 3</div>
+  <h1>Bring the Edge Up</h1>
+  <p class="standfirst">Last lesson assumed both pieces were already up top, ready to scoop. But the edge is often jammed down in a slot — so the question you hit is exactly the right one: how do you get it up onto the workbench?</p>
+</header>
+
+<p>You've spotted the real gap. <a href="0016-build-the-pair.html">Lesson 16</a> showed you how to scoop a pair together — but every diagram had the edge already sitting up in the top layer. On a real scramble it often isn't. The edge that belongs in your slot is frequently <strong>wedged in the middle row of the cube</strong>, in the right slot facing the wrong way, or down in a slot it doesn't belong to. Before you can pair it, you have to <strong>lift it out onto the workbench</strong> — the top layer. That's this lesson, and it's <em>one move you already own</em>.</p>
+
+<h2><span class="num">1.</span> An edge has only two homes</h2>
+
+<p>When you're about to build a pair, the edge you need is in exactly one of two places. Learning to tell them apart in a glance is the whole skill:</p>
+
+<div class="homes">
+  <div class="col ready">
+    <h4>Up top — ready</h4>
+    <span data-cube="white:F;edge:UR;slot:1"></span>
+    <div class="verdict">Pair it now.</div>
+    <p>The edge sits in the top layer. You can bring it beside the corner and <a href="0016-build-the-pair.html">scoop</a> straight away.</p>
+  </div>
+  <div class="col trap">
+    <h4>Trapped in a slot</h4>
+    <span data-cube="white:U;trap:edge"></span>
+    <div class="verdict">Evict it first.</div>
+    <p>The edge is wedged in the middle row (here, blue stuck in the front-right slot). You can't pair it from down there — lift it up first.</p>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The workbench rule.</strong> You can only build a pair in the <strong>top layer</strong>. So step zero of every slot is: <em>is my edge up top, or trapped in the middle?</em> If it's up top, you're already on Lesson 16. If it's trapped, you do one thing first — bring it up.
+</div>
+
+<h2><span class="num">2.</span> The move that frees it — you already know it</h2>
+
+<p>Here's the good part. The move that lifts a trapped edge onto the workbench is the <em>same</em> <span class="moves">R U R'</span> you used to pop a stuck corner last lesson. Hold the slot the edge is stuck in at the <strong>front-right</strong> (rotate the whole cube to bring it there, exactly as always), and fire once:</p>
+
+<div class="new">
+  <div class="lbl">Evict a trapped edge into the top layer</div>
+  <div class="seq">R U R'</div>
+  <div class="gloss">The R lifts the front-right slot up the right-hand side; U carries it away across the top; R' closes the slot back up — leaving the edge sitting in the top layer, your white cross untouched. Now it's a Lesson-16 case.</div>
+</div>
+
+<div class="insight">
+  <strong>One move clears the slot — you don't have to be surgical.</strong> If the corner is jammed in there too, the very same <span class="moves">R U R'</span> lifts <em>both</em> pieces out to the top at once. So you never need a special "edge only" trick: put the messy slot at front-right, fire <span class="moves">R U R'</span>, and whatever was stuck is now up on the workbench where you can pair it cleanly. <a href="https://jperm.net/3x3">[J Perm]</a>
+</div>
+
+<p class="verified">Checked on the cube simulator: with any version of the edge stuck in the front-right slot — facing the wrong way, or sharing the slot with the corner — a single <span class="moves">R U R'</span> sends it up to the top layer and leaves the white cross fully intact. <a href="../assets/f2l_verify.py">[verification]</a></p>
+
+<div class="insight">
+  <strong>What about an edge in the right slot but twisted the wrong way?</strong> Same idea — it's just trapped in a slot, so the same <span class="moves">R U R'</span> frees it. But that case (and twisted corners, and wrong pieces) has its own tells worth learning to read, so it gets its own lesson: <a href="0018-fix-a-wrong-slot.html">Lesson 18 — Fix a Wrong Slot</a>.
+</div>
+
+<h2><span class="num">3.</span> The whole loop, start to finish</h2>
+
+<p>Put it together and every slot is the same three-beat rhythm. Two of the three beats are pure Lesson 16 — the only new beat is the first:</p>
+
+<ul class="steps">
+  <li><strong>Check, then free.</strong> Edge up top already? Skip ahead. Trapped in a slot? Rotate that slot to front-right and fire <span class="moves">R U R'</span> — now it's up.</li>
+  <li><strong>Read &amp; scoop.</strong> Park the corner at top-front-right, read where its <a href="0016-build-the-pair.html">white sticker</a> points, bring the edge alongside with <span class="moves">U</span> turns, and scoop: <span class="moves">U R U' R'</span> / <span class="moves">U' F' U F</span> / (white-up) <span class="moves">R U2 R' U' R U R'</span>.</li>
+  <li><strong>Done — next slot.</strong> The pair drops home. Rotate to the next slot and start the rhythm again.</li>
+</ul>
+
+<h2><span class="num">4.</span> Drill the first beat</h2>
+
+<p>The reading is the skill, not the move. A cube appears — decide in a glance: is the edge already <strong>up top</strong> (go pair it), or is it <strong>trapped</strong> (evict with <span class="moves">R U R'</span> first)? Guided spells it out; Blind makes you call it. Goal: <strong>five in a row</strong>.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Up-or-Trapped Trainer</h4>
+  <p class="sub" id="sub">Where is the partner edge? Make the call.</p>
+  <div class="stage" id="stage"></div>
+  <div class="pad" id="pad">
+    <button data-a="up">Up top → pair it</button>
+    <button data-a="trap">Trapped → R U R'</button>
+  </div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="mode" class="on">Guided</button></div>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Still in parallel — last stretch.</strong> Keep finishing any slot the old stage-2/3 way if it fights you; you lose nothing. But with evicting added, you can now build <em>any</em> slot deliberately: free the edge, pair, insert. When all four slots feel reliable end-to-end, tell me — that's when we retire stages 2 and 3 on your <a href="../reference/solve-card.html">solve card</a> and fold F2L in for good. One case still waits for the very end: when the corner and edge show the <em>same</em> colour on top and won't pair (the "hide-and-seek" case).
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to five blind calls, then on the cube find a slot whose edge is stuck in the middle, rotate it to front-right, evict with <span class="moves">R U R'</span>, and complete the pair. Do it for at least three slots across a couple of scrambles.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions:</strong> after each solve, before touching a slot say aloud "up top, or trapped?" — make the check a reflex.</p>
+  <p style="margin-bottom:0"><strong>Primary source:</strong> <a href="https://jperm.net/3x3">J Perm — F2L</a>. Watch how he pulls a piece out of a slot with a single trigger before re-pairing it; the hands make it obvious.</p>
+</div>
+
+<p style="font-size:16px;color:var(--muted)">Your cube is the final judge — these were simulator-checked, but if your hands ever produce something the pictures don't predict, trust the cube and ask me.</p>
+
+<footer>
+  Lesson 17 of the Rubik's Cube curriculum · F2L (first two layers), part 3 · Sources: <a href="https://jperm.net/3x3">J Perm — F2L</a> · <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">Ruwix — F2L</a> · Sequences verified with the workspace <a href="../assets/cube.py">cube simulator</a> · See also <a href="0016-build-the-pair.html">Lesson 16</a>, the <a href="../reference/solve-card.html">Solve Card</a> &amp; <a href="../reference/glossary.html">Glossary</a> · Edge won't behave? Ask me — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script src="../assets/cube-render.js"></script>
+<script>
+/* ---- trainer -------------------------------------------------------- */
+(function () {
+  var CASES = [
+    { a:'up',   spec:{white:'F',edge:'UR',slot:true}, hint:'Edge is up top, beside the corner → pair it' },
+    { a:'up',   spec:{white:'R',edge:'UF',slot:true}, hint:'Edge is up top at the front → pair it' },
+    { a:'trap', spec:{white:'U',trap:'edge'},          hint:'Edge is wedged in the slot → R U R\' first' },
+    { a:'trap', spec:{white:'F',trap:'edge'},          hint:'Edge is stuck in the middle row → R U R\' first' },
+    { a:'up',   spec:{white:'F',edge:'UR',slot:true}, hint:'Edge is up top → pair it' },
+    { a:'trap', spec:{white:'R',trap:'edge'},          hint:'Edge trapped in the slot → R U R\' first' }
+  ];
+  var order=[], idx=0, streak=0, best=0, blind=false, locked=false, cur=null;
+  var stageEl=document.getElementById('stage'), msgEl=document.getElementById('msg');
+  var streakEl=document.getElementById('streak'), bestEl=document.getElementById('best');
+  var modeBtn=document.getElementById('mode'), subEl=document.getElementById('sub'), pad=document.getElementById('pad');
+
+  function reshuffle(){ order=CASES.map(function(c,i){return i;});
+    for(var i=order.length-1;i>0;i--){ var j=(i*5+streak*3+best+1)%(i+1); var t=order[i];order[i]=order[j];order[j]=t; } idx=0; }
+  function next(){ if(idx>=order.length) reshuffle(); cur=CASES[order[idx]]; idx++;
+    stageEl.innerHTML = window.__cube(cur.spec); }
+  function setMsg(t,k){ msgEl.textContent=t||' '; msgEl.className='msg'+(k?' '+k:''); }
+  function flash(b,c){ if(!b)return; b.classList.add(c); setTimeout(function(){b.classList.remove(c);},220); }
+  function answer(a,btn){ if(locked||!cur) return;
+    if(a===cur.a){ flash(btn,'flash-good'); streak++; if(streak>best)best=streak;
+      streakEl.textContent=streak; bestEl.textContent=best;
+      if(streak>=5) setMsg('Five in a row — take it to the cube. 🎉','good'); else setMsg('Right call. '+streak+' in a row.','good');
+      locked=true; setTimeout(function(){locked=false; next(); if(streak<5) setMsg('','');},700);
+    } else { flash(btn,'flash-bad'); streak=0; streakEl.textContent=0;
+      setMsg(blind ? 'Look again — is the edge up top, or down in the slot? Back to zero.' : 'Not quite — '+cur.hint+'. Back to zero.','bad');
+      locked=true; setTimeout(function(){locked=false;},750); } }
+  pad.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) answer(b.getAttribute('data-a'),b); });
+  modeBtn.addEventListener('click',function(){ blind=!blind; modeBtn.textContent=blind?'Blind':'Guided'; modeBtn.classList.toggle('on',!blind);
+    subEl.textContent=blind?'Just the cube. Call it from the picture.':'Where is the partner edge? Make the call.';
+    streak=0; streakEl.textContent=0; setMsg('',''); reshuffle(); next(); });
+  reshuffle(); next();
+})();
+</script>
+</body>
+</html>

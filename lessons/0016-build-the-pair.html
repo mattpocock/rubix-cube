@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 16 — Build the Pair: Making F2L Pairs from Scratch</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c8401a;
+    --card: #ffffff;
+    --border: #e3e0db;
+    --good: #2e7d32;
+    --good-bg: #e7f3e8;
+    --bad: #c62828;
+    --bad-bg: #fbe6e6;
+    --yellow: #f4cf28;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif; font-size: 19px; line-height: 1.65;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { margin-bottom: 48px; border-bottom: 3px solid var(--ink); padding-bottom: 24px; }
+  .kicker {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 8px;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .standfirst { font-size: 21px; color: var(--muted); font-style: italic; margin: 0; }
+  h2 { font-size: 28px; margin: 60px 0 16px; padding-top: 8px; }
+  h2 .num { color: var(--accent); margin-right: 10px; }
+  p { margin: 0 0 18px; }
+  .insight {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    padding: 18px 22px; margin: 28px 0; border-radius: 0 6px 6px 0;
+  }
+  .insight strong:first-child { color: var(--accent); }
+  code, .moves {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    background: #efece7; padding: 2px 7px; border-radius: 4px; font-size: 0.85em;
+  }
+  .moves { font-size: 1.05em; font-weight: 700; letter-spacing: 0.08em; }
+  .new { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 28px 0; color: #faf9f7; }
+  .new .lbl { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); font-weight: 700; margin-bottom: 6px; }
+  .new .seq { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 24px; font-weight: 700; letter-spacing: 0.06em; }
+  .new .gloss { font-size: 15px; color: #cfcac3; font-style: italic; margin: 8px 0 0; }
+
+  /* cube figure + legend */
+  .orient { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; justify-content: center; margin: 28px 0; }
+  .orient svg { width: 200px; height: auto; }
+  .legend { font-family: -apple-system, sans-serif; font-size: 14.5px; line-height: 1.5; max-width: 320px; }
+  .legend .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .legend .sw { width: 20px; height: 20px; border-radius: 4px; border: 1.5px solid #13110f; flex: none; }
+  .legend .sw.dash { border-style: dashed; border-color: var(--accent); }
+
+  /* case cards */
+  .cases { display: grid; grid-template-columns: 1fr; gap: 18px; margin: 28px 0; }
+  .ccard { border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 18px 20px; display: grid; grid-template-columns: 150px 1fr; gap: 18px; align-items: center; }
+  @media (max-width: 540px) { .ccard { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+  .ccard svg { width: 150px; height: auto; }
+  .ccard .tag { font-family: -apple-system, sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+  .ccard .read { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+  .ccard .read .hl { color: var(--accent); }
+  .ccard .mv { font-family: 'SF Mono', Consolas, monospace; font-weight: 700; font-size: 18px; background: #1a1a1a; color: #faf9f7; padding: 6px 12px; border-radius: 7px; display: inline-block; letter-spacing: 0.05em; }
+  .ccard .does { font-size: 14.5px; color: var(--muted); margin: 8px 0 0; }
+
+  /* trainer */
+  .trainer { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; margin: 32px 0; }
+  .trainer h4 { margin: 0 0 4px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .trainer .sub { font-size: 15px; color: var(--muted); margin: 0 0 14px; font-style: italic; }
+  .stage { display: flex; justify-content: center; margin: 0 0 12px; }
+  .stage svg { width: 190px; height: auto; }
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pad button { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 15px; font-weight: 700; padding: 16px 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; transition: transform .08s, background .12s; }
+  .pad button:hover { background: #f0ece6; }
+  .pad button:active { transform: scale(0.94); }
+  .pad button.flash-good { background: var(--good-bg); border-color: var(--good); }
+  .pad button.flash-bad { background: var(--bad-bg); border-color: var(--bad); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 0; flex-wrap: wrap; }
+  .stats { font-family: -apple-system, sans-serif; font-size: 15px; color: var(--muted); }
+  .stats b { color: var(--ink); font-size: 19px; }
+  .ctrls button { font-family: -apple-system, sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  .ctrls button:hover { border-color: var(--ink); }
+  .msg { text-align: center; font-family: -apple-system, sans-serif; font-weight: 600; min-height: 24px; margin: 14px 0 0; font-size: 16px; }
+  .msg.good { color: var(--good); }
+  .msg.bad { color: var(--bad); }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 24px 0; }
+  .steps li { counter-increment: step; position: relative; padding: 0 0 24px 56px; border-left: 2px solid var(--border); margin-left: 19px; }
+  .steps li:last-child { border-left-color: transparent; }
+  .steps li::before { content: counter(step); position: absolute; left: -20px; top: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-weight: 700; font-size: 17px; }
+  .practice { background: #fff8e9; border: 1px solid #eadfc0; border-radius: 10px; padding: 24px 28px; margin: 28px 0; }
+  .practice h4 { margin: 0 0 10px; font-family: -apple-system, sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #9a6b00; }
+  .note { background: #eef4fb; border: 1px solid #cfe0f2; border-radius: 10px; padding: 18px 22px; margin: 28px 0; font-size: 17px; }
+  .note strong:first-child { color: #1c5a9e; }
+  .verified { font-size: 14px; color: var(--muted); font-style: italic; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); font-family: -apple-system, sans-serif; font-size: 14px; color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rubik's Cube · Lesson 16 · F2L — first two layers, part 2</div>
+  <h1>Build the Pair</h1>
+  <p class="standfirst">You couldn't find ready-made pairs to slot in — and you were right: they almost never appear on a scramble. The real skill isn't <em>finding</em> pairs. It's <em>building</em> them — and now you'll <em>see</em> exactly how.</p>
+</header>
+
+<p>That frustration last session was the lesson working, not failing. A corner already joined to its edge, white politely facing the side, is rare. The other three slots you have to <strong>make</strong>. Good news: building a pair is just two small skills, and the insert at the end is still the <a href="0015-pairs-not-pieces.html">move you already own</a>.</p>
+
+<h2><span class="num">1.</span> How to read these diagrams</h2>
+
+<p>Every picture below is your cube held in the normal solving grip — <strong>yellow on top, green in front, red on the right</strong>, looking down at the front-right corner where you build. Here's the empty front-right <strong>slot</strong> (dashed) waiting for a pair, with one white corner and its blue partner edge loose up in the top layer:</p>
+
+<div class="orient">
+  <span data-cube="white:F;edge:UR;slot:1"></span>
+  <div class="legend">
+    <div class="row"><span class="sw" style="background:#f4f2ec"></span> the <strong>white</strong> sticker — where it points decides everything</div>
+    <div class="row"><span class="sw" style="background:#9c968c"></span> the corner's other two colours</div>
+    <div class="row"><span class="sw" style="background:#3b7dd8"></span> the matching <strong>edge</strong> (its partner)</div>
+    <div class="row"><span class="sw dash" style="background:#d9d3c8"></span> the empty <strong>slot</strong> the pair drops into</div>
+  </div>
+</div>
+
+<div class="insight">
+  <strong>The whole method in one line.</strong> Get the corner and its edge <em>both up in the top layer</em>, then <strong>scoop them together and drop them in one motion</strong>. That scoop is a single short sequence — chosen by where the corner's <strong>white</strong> sticker points. <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">[Ruwix]</a>
+</div>
+
+<h2><span class="num">2.</span> First, get both pieces up top</h2>
+
+<p>You can only build a pair on your workbench — the top layer. Often one piece is stuck in the slot wrong (corner twisted, or edge flipped). Pop it out the way you already know:</p>
+
+<div class="new">
+  <div class="lbl">Pop a stuck piece into the top layer</div>
+  <div class="seq">R U R'</div>
+  <div class="gloss">Hold the bad slot at front-right and fire once — the jammed piece lifts into the top layer. Now both pieces are up where you can pair them.</div>
+</div>
+
+<h2><span class="num">3.</span> Then scoop — read the white sticker</h2>
+
+<p>Park the <strong>corner</strong> at the top-front-right and look at where its <strong>white</strong> sticker points. That one read picks your scoop. First bring the <em>edge</em> (blue) to the spot shown with <span class="moves">U</span> turns, then fire:</p>
+
+<div class="cases">
+  <div class="ccard">
+    <span data-cube="white:F;edge:UR;slot:1"></span>
+    <div>
+      <div class="tag">Case 1 · white on a side</div>
+      <div class="read">White faces the <span class="hl">FRONT</span>, edge up at top-right.</div>
+      <span class="mv">U R U' R'</span>
+      <div class="does">The U sets the edge over the slot; the trigger snaps the pair and drops it in.</div>
+    </div>
+  </div>
+  <div class="ccard">
+    <span data-cube="white:R;edge:UF;slot:1"></span>
+    <div>
+      <div class="tag">Case 2 · the mirror</div>
+      <div class="read">White faces the <span class="hl">RIGHT</span>, edge up at top-front.</div>
+      <span class="mv">U' F' U F</span>
+      <div class="does">Same idea flipped to the front face — the exact mirror of Case 1.</div>
+    </div>
+  </div>
+  <div class="ccard">
+    <span data-cube="white:U;edge:UR;slot:1"></span>
+    <div>
+      <div class="tag">Case 3 · the stubborn one</div>
+      <div class="read">White points <span class="hl">UP</span>.</div>
+      <span class="mv">R U2 R' U' R U R'</span>
+      <div class="does">The first three moves (<span class="moves">R U2 R'</span>) roll white off the top onto a side — then it's just a side case again.</div>
+    </div>
+  </div>
+</div>
+<p class="verified">Every sequence here was checked on a cube simulator: each disturbs only the front-right slot and the top layer — never the rest of your first two layers. <a href="../assets/f2l_verify.py">[verification]</a></p>
+
+<div class="insight">
+  <strong>Two cases are one idea; the third reduces to them.</strong> Cases 1 and 2 are mirror twins — white on a side, scoop with a trigger. Case 3 just pays three extra moves to knock white down first. So you're really learning <strong>one move and its mirror</strong>, plus "if white's on top, knock it down."
+</div>
+
+<h2><span class="num">4.</span> Drill the read</h2>
+
+<p>The moves are easy; the skill is the <em>read</em>. A cube appears — say where white points, pick the scoop. Guided names it; Blind makes you call it from the picture. Goal: <strong>five in a row</strong>.</p>
+
+<div class="trainer" id="trainer">
+  <h4>Scoop-the-Pair Trainer</h4>
+  <p class="sub" id="sub">Both pieces are up top. Read the corner's white sticker, choose the scoop.</p>
+  <div class="stage" id="stage"></div>
+  <div class="pad" id="pad">
+    <button data-a="F">U R U' R'</button>
+    <button data-a="R">U' F' U F</button>
+    <button data-a="U">R U2 R' …</button>
+  </div>
+  <div class="msg" id="msg">&nbsp;</div>
+  <div class="bar">
+    <div class="stats">Streak <b id="streak">0</b> &nbsp;·&nbsp; Best <b id="best">0</b></div>
+    <div class="ctrls"><button id="mode" class="on">Guided</button></div>
+  </div>
+</div>
+
+<h2><span class="num">5.</span> Take it to the cube</h2>
+
+<ul class="steps">
+  <li><strong>White cross, then pick any slot.</strong> Rotate the whole cube so its empty slot is front-right.</li>
+  <li><strong>Get both pieces up top.</strong> Find the white corner for that slot and its edge; pop out whatever's stuck with <span class="moves">R U R'</span>.</li>
+  <li><strong>Read white, bring the edge, scoop.</strong> Match the picture: white on a side → the trigger twin; white on top → knock it down first. The pair drops home.</li>
+  <li><strong>Repeat for all four slots.</strong> Now you're <em>building</em> pairs, not waiting for them — the thing that was missing last session.</li>
+</ul>
+
+<div class="note">
+  <strong>Still in parallel — for one more week.</strong> Keep finishing any slot that fights you the old stage-2/3 way; you lose nothing. But you should now be able to build most pairs deliberately. When all four slots feel buildable, tell me — that's when we retire stages 2 and 3 on your <a href="../reference/solve-card.html">solve card</a> and fold F2L in for good. One case still waits after that: when the corner and edge show the <em>same</em> colour on top and refuse to pair (the "hide-and-seek" case) — we'll take that last.
+</div>
+
+<div class="practice">
+  <h4>Practice — this session &amp; after</h4>
+  <p style="margin-bottom:10px"><strong>Now:</strong> trainer to five blind reads, then on the cube build and insert at least one pair into <em>each</em> of the four slots across a few scrambles.</p>
+  <p style="margin-bottom:10px"><strong>Between sessions:</strong> after each solve, rebuild one slot from scratch — pop both pieces up, then scoop — saying the read aloud ("white on front, edge to the right, U R U' R'").</p>
+  <p style="margin-bottom:0"><strong>Primary source:</strong> <a href="https://jperm.net/3x3">J Perm — F2L</a>. Watch the basic pairing cases; his hands show the scoop in motion better than any still picture.</p>
+</div>
+
+<p style="font-size:16px;color:var(--muted)">Your cube is the final judge — these were simulator-checked, but if your hands ever produce something the pictures don't predict, trust the cube and ask me.</p>
+
+<footer>
+  Lesson 16 of the Rubik's Cube curriculum · F2L (first two layers), part 2 · Sources: <a href="https://ruwix.com/the-rubiks-cube/advanced-cfop-fridrich/first-two-layers-f2l/">Ruwix — F2L</a> · <a href="https://www.speedcube.us/blogs/speedcubing-solutions/3x3-beginner-f2l-first-two-layers-of-cfop-method">speedcube.us</a> · <a href="https://jperm.net/3x3">J Perm — F2L</a> · Diagrams &amp; sequences verified with the workspace <a href="../assets/cube.py">cube simulator</a> · See also the <a href="../reference/glossary.html">Glossary</a> · Stuck on a pair? Ask me — or <a href="https://reddit.com/r/Cubers">r/Cubers</a>.
+</footer>
+
+</div>
+
+<script>
+/* ---- isometric cube renderer ---------------------------------------- */
+(function () {
+  var s = 26, cos30 = Math.cos(Math.PI/6), sin30 = 0.5, Ax = 85, Ay = 88;
+  var FV = [-cos30*s, -sin30*s], RV = [cos30*s, -sin30*s], DV = [0, s];
+  function vT(cf,cr){ return [Ax+cf*FV[0]+cr*RV[0], Ay+cf*FV[1]+cr*RV[1]]; }
+  function vF(c,r){ return [Ax+c*FV[0]+r*DV[0], Ay+c*FV[1]+r*DV[1]]; }
+  function vR(c,r){ return [Ax+c*RV[0]+r*DV[0], Ay+c*RV[1]+r*DV[1]]; }
+  var DARK='#403d37', WHITE='#f4f2ec', CORNER='#9c968c', EDGE='#3b7dd8', SLOT='#d9d3c8';
+
+  function poly(v, fill, dashed) {
+    var pts = v.map(function(p){ return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    var st = dashed ? 'stroke="#c8401a" stroke-width="1.6" stroke-dasharray="3 2"' : 'stroke="#13110f" stroke-width="1.3"';
+    return '<polygon points="'+pts+'" fill="'+fill+'" '+st+' stroke-linejoin="round"/>';
+  }
+  function label(p, t, col){ return '<text x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="'+col+'" text-anchor="middle" dominant-baseline="central">'+t+'</text>'; }
+
+  function build(spec) {
+    // spec keys: white 'F'|'R'|'U', edge 'UF'|'UR'|null, slot bool
+    var ov = {}; // 'T,cf,cr' / 'F,c,r' / 'R,c,r' -> {fill, dash}
+    function set(k,f,d){ ov[k]={fill:f,dash:!!d}; }
+    if (spec.slot){ set('F,0,1',SLOT,1); set('F,0,2',SLOT,1); set('R,0,1',SLOT,1); set('R,0,2',SLOT,1); }
+    // corner at UFR: top cell (0,0), front cell (0,0), right cell (0,0)
+    if (spec.white==='F'){ set('F,0,0',WHITE); set('T,0,0',CORNER); set('R,0,0',CORNER); }
+    else if (spec.white==='R'){ set('R,0,0',WHITE); set('T,0,0',CORNER); set('F,0,0',CORNER); }
+    else { set('T,0,0',WHITE); set('F,0,0',CORNER); set('R,0,0',CORNER); }
+    // edge
+    if (spec.edge==='UF'){ set('T,1,0',EDGE); set('F,1,0',EDGE); }
+    else if (spec.edge==='UR'){ set('T,0,1',EDGE); set('R,1,0',EDGE); }
+
+    var out = [];
+    var cf, cr, c, r, k;
+    for (cf=0; cf<3; cf++) for (cr=0; cr<3; cr++){
+      k='T,'+cf+','+cr; var o=ov[k]||{fill:DARK};
+      out.push(poly([vT(cf,cr),vT(cf+1,cr),vT(cf+1,cr+1),vT(cf,cr+1)], o.fill, o.dash));
+    }
+    for (c=0; c<3; c++) for (r=0; r<3; r++){
+      k='F,'+c+','+r; var of=ov[k]||{fill:DARK};
+      out.push(poly([vF(c,r),vF(c+1,r),vF(c+1,r+1),vF(c,r+1)], of.fill, of.dash));
+    }
+    for (c=0; c<3; c++) for (r=0; r<3; r++){
+      k='R,'+c+','+r; var orr=ov[k]||{fill:DARK};
+      out.push(poly([vR(c,r),vR(c+1,r),vR(c+1,r+1),vR(c,r+1)], orr.fill, orr.dash));
+    }
+    // face letters at face centres
+    out.push(label(vT(1.5,1.5), 'U', '#bdb7ab'));
+    out.push(label(vF(1.5,1.5), 'F', '#7ea98a'));
+    out.push(label(vR(1.5,1.5), 'R', '#cf8d86'));
+    return '<svg viewBox="0 0 170 176" role="img" aria-label="cube state">'+out.join('')+'</svg>';
+  }
+  function parse(str){
+    var spec={white:'F',edge:null,slot:false};
+    str.split(';').forEach(function(kv){ var p=kv.split(':'); if(p[0]==='white')spec.white=p[1];
+      else if(p[0]==='edge')spec.edge=(p[1]==='null'?null:p[1]); else if(p[0]==='slot')spec.slot=(p[1]==='1'); });
+    return spec;
+  }
+  // render all static [data-cube] spans
+  var nodes = document.querySelectorAll('[data-cube]');
+  Array.prototype.forEach.call(nodes, function(n){ n.innerHTML = build(parse(n.getAttribute('data-cube'))); });
+  window.__cube = build; // expose for trainer
+})();
+
+/* ---- trainer -------------------------------------------------------- */
+(function () {
+  var CASES = [
+    { a:'F', spec:{white:'F',edge:'UR',slot:true}, hint:'White on the FRONT → U R U\' R\'' },
+    { a:'R', spec:{white:'R',edge:'UF',slot:true}, hint:'White on the RIGHT → U\' F\' U F' },
+    { a:'U', spec:{white:'U',edge:'UR',slot:true}, hint:'White on TOP → R U2 R\' first' },
+    { a:'F', spec:{white:'F',edge:'UR',slot:true}, hint:'White on the FRONT → U R U\' R\'' },
+    { a:'R', spec:{white:'R',edge:'UF',slot:true}, hint:'White on the RIGHT → U\' F\' U F' },
+    { a:'U', spec:{white:'U',edge:'UR',slot:true}, hint:'White on TOP → R U2 R\' first' }
+  ];
+  var order=[], idx=0, streak=0, best=0, blind=false, locked=false, cur=null;
+  var stageEl=document.getElementById('stage'), msgEl=document.getElementById('msg');
+  var streakEl=document.getElementById('streak'), bestEl=document.getElementById('best');
+  var modeBtn=document.getElementById('mode'), subEl=document.getElementById('sub'), pad=document.getElementById('pad');
+
+  function reshuffle(){ order=CASES.map(function(c,i){return i;});
+    for(var i=order.length-1;i>0;i--){ var j=(i*5+streak*3+best+1)%(i+1); var t=order[i];order[i]=order[j];order[j]=t; } idx=0; }
+  function next(){ if(idx>=order.length) reshuffle(); cur=CASES[order[idx]]; idx++;
+    stageEl.innerHTML = window.__cube(cur.spec); }
+  function setMsg(t,k){ msgEl.textContent=t||' '; msgEl.className='msg'+(k?' '+k:''); }
+  function flash(b,c){ if(!b)return; b.classList.add(c); setTimeout(function(){b.classList.remove(c);},220); }
+  function answer(a,btn){ if(locked||!cur) return;
+    if(a===cur.a){ flash(btn,'flash-good'); streak++; if(streak>best)best=streak;
+      streakEl.textContent=streak; bestEl.textContent=best;
+      if(streak>=5) setMsg('Five in a row — take it to the cube. 🎉','good'); else setMsg('Right scoop. '+streak+' in a row.','good');
+      locked=true; setTimeout(function(){locked=false; next(); if(streak<5) setMsg('','');},700);
+    } else { flash(btn,'flash-bad'); streak=0; streakEl.textContent=0;
+      setMsg(blind ? 'Not that scoop — read where white points. Back to zero.' : 'Not quite — '+cur.hint+'. Back to zero.','bad');
+      locked=true; setTimeout(function(){locked=false;},750); } }
+  pad.addEventListener('click',function(e){ var b=e.target.closest('button'); if(b) answer(b.getAttribute('data-a'),b); });
+  modeBtn.addEventListener('click',function(){ blind=!blind; modeBtn.textContent=blind?'Blind':'Guided'; modeBtn.classList.toggle('on',!blind);
+    subEl.textContent=blind?'Just the cube. Call the scoop from the picture.':'Both pieces are up top. Read the corner\'s white sticker, choose the scoop.';
+    streak=0; streakEl.textContent=0; setMsg('',''); reshuffle(); next(); });
+  reshuffle(); next();
+})();
+</script>
+</body>
+</html>
+</content>

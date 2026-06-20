@@ -102,8 +102,11 @@
   <dd>A quarter-turn counterclockwise. <span class="moves">R'</span> undoes <span class="moves">R</span>.</dd>
 
   <dt>The trigger <span class="moves">R U R' U'</span></dt>
-  <dd>The four-move sequence used to insert all four white corners by repetition (1, 3, or 5 times). Disturbs the bottom layer temporarily but restores it each cycle.</dd>
+  <dd>The four-move sequence used to insert all four white corners by repetition (1, 3, or 5 times). Disturbs the bottom layer temporarily but restores it each cycle. The most famous <strong>chunk</strong> (see below).</dd>
   <dd class="avoid"><strong>Avoid:</strong> "sexy move" in workspace files — same thing, but "trigger" is our canonical name.</dd>
+
+  <dt>Chunk</dt>
+  <dd>A short group of moves the fingers run as a single unit, so a long algorithm is held as a handful of bundles rather than a string of moves. The memory hook for both PLLs (lesson 13): the A-perm is <em>knock · wall · twin-knock · wall · slam</em>; the U-perm is <em>bar · see-saw bar · landing</em>. The trigger is the canonical chunk.</dd>
 </dl>
 
 <h2>Technique</h2>
@@ -116,6 +119,63 @@
 
   <dt>Parking</dt>
   <dd>Turning the top layer with <span class="moves">U</span> moves until a piece sits where an algorithm can act on it: a corner directly above its home slot, or an edge forming the upside-down T over its matching center.</dd>
+
+  <dt>AUF <span style="font-weight:400;font-size:0.8em;color:var(--muted)">(Adjust U Face)</span></dt>
+  <dd>A single <span class="moves">U</span> turn done before or after an algorithm to aim it at the right piece or to finish lining up the top. The cheapest setup there is — one turn that can save a whole repeat.</dd>
+
+  <dt>Corner insert</dt>
+  <dd>Reading a parked first-layer corner by where its white sticker faces, then firing one short sequence instead of grinding the trigger (lesson 14). White on the <strong>right</strong> → <span class="moves">R U R'</span>; white on the <strong>front</strong> → <span class="moves">F' U' F</span> (the mirror — open whichever face white hugs); white on <strong>top</strong> → setup <span class="moves">R U2 R'</span> then insert: <span class="moves">R U2 R' U' R U R'</span>. <em>Verified by cube simulation.</em></dd>
+</dl>
+
+<h2>Last layer — intermediate</h2>
+<dl>
+  <dt>Last layer (LL)</dt>
+  <dd>The whole yellow layer. The intermediate approach solves it in two halves: orient (OLL), then permute (PLL).</dd>
+
+  <dt>Orient / OLL <span style="font-weight:400;font-size:0.8em;color:var(--muted)">(Orientation of the Last Layer)</span></dt>
+  <dd>Making the entire top face one colour (yellow up) without caring where the pieces sit yet. Done in two looks: the yellow cross (edges), then the corners.</dd>
+
+  <dt>Permute / PLL <span style="font-weight:400;font-size:0.8em;color:var(--muted)">(Permutation of the Last Layer)</span></dt>
+  <dd>Sliding the already-oriented last-layer pieces into their home positions to finish the cube. The second half of the intermediate last layer: place the corners, then cycle the edges. <em>(Taught in lesson 12.)</em></dd>
+
+  <dt>Sune <span class="moves">R U R' U R U2 R'</span></dt>
+  <dd>The workhorse OLL corner algorithm. Repeated one to three times (re-aiming between each) it turns the whole top yellow, retiring the beginner <span class="moves">R' D' R D</span> grind. Opens with the same <span class="moves">R U R'</span> as the trigger.</dd>
+
+  <dt>3-cycle</dt>
+  <dd>An algorithm that moves three pieces in a loop and leaves the fourth untouched. Both PLL algorithms are 3-cycles; the untouched piece is the <strong>anchor</strong>, held at the back.</dd>
+
+  <dt>Headlights</dt>
+  <dd>Two top corners on the same face showing the <em>same colour</em> as each other — like a car's headlights. The recognition cue for PLL corners: hold the headlights at the back and run the corner algorithm. No headlights anywhere = the diagonal case (run it twice).</dd>
+
+  <dt>Corner perm (A-perm) <span class="moves">R' F R' B2 R F' R' B2 R2</span></dt>
+  <dd>The PLL corner algorithm. A 3-cycle that places three corners and leaves the front-left one fixed; keeps the top yellow and never touches an edge. Fired once or twice (anchor to the back). <em>Verified by cube simulation.</em></dd>
+
+  <dt>Edge perm (U-perm) <span class="moves">R U' R U R U R U' R' U' R2</span></dt>
+  <dd>The PLL edge algorithm. A 3-cycle that places three edges and leaves the back edge fixed; never touches a corner. Fired once or twice (solved edge to the back). <em>Verified by cube simulation.</em></dd>
+</dl>
+
+<h2>First two layers (F2L)</h2>
+<dl>
+  <dt>F2L <span style="font-weight:400;font-size:0.8em;color:var(--muted)">(First Two Layers)</span></dt>
+  <dd>Solving the bottom two layers together by inserting four corner+edge <strong>pairs</strong>, rather than placing all corners (stage 2) then all middle edges (stage 3) in two separate passes. Same solving grip — white cross down, yellow up. Replaces the old stages 2 and 3 once learned. <em>(Introduced in lesson 15.)</em></dd>
+
+  <dt>Pair</dt>
+  <dd>A white corner together with the middle edge that shares its two side colours — the two pieces that belong in the same slot. F2L joins the pair in the top layer, then inserts both at once.</dd>
+
+  <dt>Slot</dt>
+  <dd>One of the four bottom-corner positions that a pair drops into (a corner socket plus its adjacent middle-edge gap). You always insert into the <strong>front-right</strong> slot, rotating the whole cube to bring each slot there in turn.</dd>
+
+  <dt>Ready pair</dt>
+  <dd>A pair already joined in the top layer with its <strong>white sticker facing a side</strong> (not up), parked above its slot — insert directly with the lesson-14 move it carries the edge along with: white-right → <span class="moves">R U R'</span>, white-front → <span class="moves">F' U' F</span>. If white faces up or the pieces are apart, it must be <strong>built</strong> (joined) first.</dd>
+
+  <dt>Build / scoop a pair</dt>
+  <dd>Making a pair when none is ready (the normal case): get both the white corner and its edge into the top layer — popping out a stuck piece with <span class="moves">R U R'</span> — then "scoop" them together and insert in one motion, chosen by where the corner's <strong>white</strong> points (lesson 16). White on the <strong>front</strong> → edge to top-right → <span class="moves">U R U' R'</span>; white on the <strong>right</strong> → edge to top-front → <span class="moves">U' F' U F</span>; white on <strong>top</strong> → <span class="moves">R U2 R' U' R U R'</span> (rolls white onto a side, then scoops). <em>All verified FR-slot-only by cube simulation.</em></dd>
+
+  <dt>Evict (free a trapped piece)</dt>
+  <dd>You can only build a pair on the <strong>workbench</strong> — the top layer. If the edge (or corner) you need is trapped down in the middle row — in the right slot but flipped, or in a wrong slot — lift it out first: rotate that slot to the <strong>front-right</strong> and fire <span class="moves">R U R'</span> once. The piece pops up to the top with the white cross untouched, and whatever else was jammed in the slot comes up with it. So step zero of every slot is the read <em>"edge up top, or trapped?"</em> (lesson 17). <em>Verified cross-safe by cube simulation.</em></dd>
+
+  <dt>Wrong slot (filled-but-wrong)</dt>
+  <dd>A slot that <em>looks</em> finished but isn't — easy to skate past. A solved slot has <strong>clean colour runs</strong> down its two visible faces (green down the front, red down the right) and <strong>no white on a side</strong>. The three defects: <strong>edge flipped</strong> (its two colours swapped, breaking the colour run), <strong>corner twisted</strong> (white showing on a side, not the bottom), or the <strong>wrong piece</strong> entirely. You can't fix any of them in place — empty the slot and rebuild: hold it at front-right, <span class="moves">R U R'</span> to clear, then pair and insert (lesson 18). <em>All three verified cross-safe by cube simulation.</em></dd>
 </dl>
 
 <footer>
